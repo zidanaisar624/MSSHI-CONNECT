@@ -1,0 +1,16 @@
+[package]
+name = "msshi-connect-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Ultra-lightweight Rust core engine for MSSHI Installer & Connect (3-Zone safe, GitHub ETag sync, Connect Hub)"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+hex = "0.4"
+ureq = { version = "2", default-features = false, features = ["tls", "json"] }
+walkdir = "2"
+thiserror = "1"
+getrandom = "0.2"

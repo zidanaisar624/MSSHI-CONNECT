@@ -1,0 +1,56 @@
+name: Build & Verify MSSHI Installer & Connect (Rust + JS)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Uji UI & Bridge JavaScript (Node)
+        run: node --test tests/connect.test.mjs
+      - name: Uji Mesin Inti Rust
+        run: cargo test --workspace --verbose
+      - name: Build Biner Rilis Rust (Ringan Win10 4 GB)
+        run: cargo build --release --bin msshi-connect
+      - name: Kemas Paket Portabel Windows x64 (.exe Mandiri + .zip) + SHA256SUMS
+        shell: pwsh
+        run: |
+          $ver = "1.0.0"
+          $stage = "dist/MSSHI-Connect-$ver-windows-x64"
+          New-Item -ItemType Directory -Force -Path "$stage/assets", "$stage/ui" | Out-Null
+          $portableExe = "dist/MSSHI-Connect-Portable-win-x64.exe"
+          Copy-Item "target/release/msshi-connect.exe" $portableExe -Force
+          Copy-Item "target/release/msshi-connect.exe" "$stage/MSSHI-Connect.exe" -Force
+          Copy-Item "MSSHI_Connect.bat", "msshi-connect.cmd", "LICENSE", "README.md" "$stage/"
+          Copy-Item "assets/*" "$stage/assets/" -Recurse
+          Copy-Item "ui/*" "$stage/ui/" -Recurse
+          $zip = "dist/MSSHI-Connect-$ver-windows-x64.zip"
+          Compress-Archive -Path "$stage/*" -DestinationPath $zip -Force
+          $hashExe = (Get-FileHash $portableExe -Algorithm SHA256).Hash.ToLower()
+          $hashZip = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          @(
+            "$hashExe  MSSHI-Connect-Portable-win-x64.exe",
+            "$hashZip  MSSHI-Connect-$ver-windows-x64.zip"
+          ) | Out-File -Encoding ascii "dist/SHA256SUMS.txt"
+      - name: Upload Artifact Windows x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSSHI-Connect-Windows-x64
+          path: |
+            dist/MSSHI-Connect-Portable-win-x64.exe
+            dist/MSSHI-Connect-*-windows-x64.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error

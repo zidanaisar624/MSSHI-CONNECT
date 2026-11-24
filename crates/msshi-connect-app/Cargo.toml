@@ -1,0 +1,16 @@
+[package]
+name = "msshi-connect-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Desktop & CLI runner for MSSHI Installer & Connect (Rust loopback IPC + Vanilla JS Cyber-Noir UI)"
+
+[[bin]]
+name = "msshi-connect"
+path = "src/main.rs"
+
+[dependencies]
+msshi-connect-core = { path = "../msshi-connect-core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tiny_http = "0.12"

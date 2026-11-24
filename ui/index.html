@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MSSHI Installer &amp; Connect v1.0.0</title>
+  <link rel="icon" type="image/png" href="/assets/msshi-connect-icon-64.png">
+  <link rel="stylesheet" href="/styles/cyber-noir.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/assets/msshi-connect-icon-64.png" alt="MSSHI Connect Logo" width="34" height="34">
+      <div>
+        <div class="brand-title">MSSHI <span>INSTALLER &amp; CONNECT</span></div>
+        <div class="brand-sub">v1.0.0 · Rust + Vanilla JS · 3-Zone Safe · 0 Kredit AI</div>
+      </div>
+    </div>
+    <div class="top-badges">
+      <span id="badge-github" class="pill pill-info">GitHub: Memeriksa...</span>
+      <span id="badge-autoup" class="pill pill-amber">Auto-Upgrade: ON</span>
+      <button id="btn-open-doctor" class="btn btn-ghost btn-sm" type="button" title="Buka aplikasi terpisah MSSHI Doctor">Buka MSSHI Doctor →</button>
+      <a class="btn btn-saweria btn-sm" href="https://saweria.co/muzas" target="_blank" rel="noopener noreferrer">☕ Saweria</a>
+    </div>
+  </header>
+
+  <section class="hero-strip">
+    <img src="/assets/msshi-connect-banner-ui.png" alt="MSSHI Installer & Connect Cyber-Noir Banner" class="hero-img">
+    <div id="admin-warning" class="alert alert-danger hidden">
+      ⚠️ <strong>PERINGATAN ANTI-ADMIN-LOCK:</strong> Aplikasi berjalan sebagai Administrator Windows! Tutup dan jalankan sebagai user biasa agar file <code>config.yaml</code> Hermes Desktop tidak terkunci <code>Permission denied</code>.
+    </div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="home" role="tab">1. Beranda &amp; Versi</button>
+    <button class="tab" data-tab="setup" role="tab">2. Setup &amp; Mode</button>
+    <button class="tab" data-tab="addons" role="tab">3. Skills &amp; Add-on</button>
+    <button class="tab" data-tab="connect" role="tab">4. Connect Hub</button>
+    <button class="tab" data-tab="logs" role="tab">5. Eksekusi &amp; Riwayat</button>
+  </nav>
+
+  <main class="container">
+    <!-- TAB 1: BERANDA & VERSI -->
+    <section id="tab-home" class="panel active">
+      <div class="grid-2">
+        <article class="card">
+          <h2>🖥️ Status Perangkat &amp; Hermes</h2>
+          <div id="probe-list" class="kv-list">Memuat telemetri perangkat...</div>
+          <div class="card-actions">
+            <button id="btn-refresh-probe" class="btn btn-ghost btn-sm" type="button">Segarkan Deteksi</button>
+            <a class="btn btn-ghost btn-sm" href="https://hermes-agent.nousresearch.com/" target="_blank" rel="noopener noreferrer">Situs Resmi Hermes ↗</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>🔄 Kontrol Versi GitHub (Auto vs Mandiri)</h2>
+          <div class="form-row">
+            <label>Mode Auto-Upgrade</label>
+            <div class="toggle-group">
+              <button id="btn-auto-on" class="seg active" type="button">ON (Auto-Cek)</button>
+              <button id="btn-auto-off" class="seg" type="button">OFF (Pilih Mandiri)</button>
+            </div>
+          </div>
+          <div id="policy-row" class="form-row">
+            <label for="sel-policy">Kebijakan Auto-Upgrade</label>
+            <select id="sel-policy">
+              <option value="smart_split">Cerdas (Masalah Sistem = Auto Tanpa Tanya · Fitur Baru = Warning &amp; Pilih Sendiri)</option>
+              <option value="notify_confirm">Tanya Semua (Konfirmasi 1-Klik untuk semua update)</option>
+              <option value="auto_apply_zone1">Full Auto Zona 1 (Semua update inti otomatis + Backup Receipt)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="sel-channel">Kanal Versi</label>
+            <select id="sel-channel">
+              <option value="stable">Stable Releases (Tag resmi: v3.2.0, v3.1.2, dst.)</option>
+              <option value="main">Rolling main (Fitur paling mutakhir tiap commit)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="sel-version">Pilih Versi Mandiri</label>
+            <select id="sel-version"><option value="v3.2.0">v3.2.0 (Stable Terbaru)</option><option value="v3.1.2">v3.1.2 (Baseline Sebelumnya)</option></select>
+          </div>
+          <div class="form-row">
+            <label for="inp-local-source">Atau Folder/ZIP Sumber Lokal (Offline)</label>
+            <input id="inp-local-source" type="text" placeholder="Opsional: D:\Paket\MSSHI-v3.2.0.zip">
+          </div>
+          <div class="card-actions">
+            <button id="btn-check-github" class="btn btn-secondary btn-sm" type="button">Cek Update GitHub</button>
+            <button id="btn-smart-classify" class="btn btn-primary btn-sm" type="button">Simulasi / Cek Pemisahan Update Sistem vs Fitur</button>
+            <button id="btn-show-changelog" class="btn btn-ghost btn-sm" type="button">Lihat Changelog</button>
+            <button id="btn-save-prefs" class="btn btn-ghost btn-sm" type="button">Simpan Preferensi</button>
+          </div>
+        </article>
+      </div>
+
+      <article class="card mt-16">
+        <h2>🎯 Pilih Cepat Keperluan Anda (1-Klik Mengisi Tab 2 &amp; Tab 3)</h2>
+        <div id="preset-grid" class="preset-grid"></div>
+      </article>
+    </section>
+
+    <!-- TAB 2: SETUP & MODE -->
+    <section id="tab-setup" class="panel">
+      <div class="grid-2">
+        <article class="card">
+          <h2>⚙️ Mode Setup &amp; Platform Target</h2>
+          <div class="form-row">
+            <label for="sel-mode">Mode Instalasi MSSHI</label>
+            <select id="sel-mode"></select>
+          </div>
+          <div class="form-row">
+            <label for="sel-platform">Platform Host</label>
+            <select id="sel-platform"></select>
+          </div>
+          <div class="form-row">
+            <label for="sel-default-bot">Tata Letak Bot Default Hermes</label>
+            <select id="sel-default-bot">
+              <option value="auto">auto / yukino — Profil default langsung Yukino + 4 spesialis</option>
+              <option value="keep-hermes">keep-hermes — Profil default netral + 5 profil terpisah</option>
+            </select>
+          </div>
+          <div class="checkbox-card">
+            <label><input id="chk-light-ram" type="checkbox"> <strong>Mode Super Hemat (Acuan Benchmark Win10 RAM 4 GB · <code>--light --low-ram</code>)</strong></label>
+            <p class="muted">Hermes berjalan di Windows 11; mode ini menjaga beban MSSHI sangat ringan (saking ringannya sanggup jalan di spek sekelas Win10 RAM 4 GB: unduhan ≤ 50 MB, ekstra RAM ≤ 150 MB).</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>💾 Lokasi Drive, Auto-Temp &amp; Buku Panduan PDF</h2>
+          <div class="form-row">
+            <label for="inp-msshi-home">Folder MSSHI (<code>MSSHI_HOME</code> — Zona 1)</label>
+            <input id="inp-msshi-home" type="text" value="D:\MSSHI">
+          </div>
+          <div class="form-row">
+            <label for="inp-hermes-home">Folder Data Hermes (<code>HERMES_HOME</code>)</label>
+            <input id="inp-hermes-home" type="text" value="D:\HermesData">
+          </div>
+          <div id="drive-pills" class="pill-row"></div>
+          <div class="checkbox-card mt-12">
+            <label><input id="chk-copy-pdf" type="checkbox" checked> <strong>Salin Buku Panduan PDF Klien otomatis</strong></label>
+            <div class="form-row mt-8">
+              <label for="sel-pdf-ver">Kanal PDF</label>
+              <select id="sel-pdf-ver">
+                <option value="latest">latest (Modul Lengkap v3.1.2)</option>
+                <option value="v3.1.2-master-klien">v3.1.2-master-klien (Ringkas 7 Hal)</option>
+                <option value="v3.1.2">v3.1.2 (Modul Lengkap 37 Hal)</option>
+              </select>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- TAB 3: SKILLS & ADD-ON -->
+    <section id="tab-addons" class="panel">
+      <article class="card">
+        <h2>🧩 Plugin Inti MSSHI (Aktif Standar · 0 Pengubahan Provider)</h2>
+        <div id="core-plugins-list" class="pill-row"></div>
+      </article>
+      <div class="grid-2 mt-16">
+        <article class="card">
+          <h2>📦 Add-on Opsional (Default OFF · Info Disk/RAM Jujur)</h2>
+          <div id="addons-list" class="check-list"></div>
+        </article>
+        <article class="card">
+          <h2>📚 Context-Sources On-Demand (Default OFF = 0 MB Awal)</h2>
+          <div id="sources-list" class="check-list"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- TAB 4: CONNECT HUB -->
+    <section id="tab-connect" class="panel">
+      <article class="card">
+        <div class="card-header-flex">
+          <h2>🔗 MSSHI Connect Hub (Bot ↔ CLI-Anything ↔ Aplikasi)</h2>
+          <div class="pill-row">
+            <span class="pill pill-ok">auto_open_on_boot: FALSE</span>
+            <span class="pill pill-info">0 LLM Call</span>
+          </div>
+        </div>
+        <div class="card-actions mb-12">
+          <button id="btn-scan-hub" class="btn btn-secondary btn-sm" type="button">Pindai Aplikasi Lokal</button>
+          <button id="btn-reconnect-all" class="btn btn-primary btn-sm" type="button">Auto-Reconnect Semua Bot</button>
+          <button id="btn-save-hub" class="btn btn-ghost btn-sm" type="button">Simpan Pemetaan Connect Hub</button>
+        </div>
+        <div id="hub-apps-table"></div>
+        <div class="grid-2 mt-16">
+          <div>
+            <h3>Matriks Koneksi Per Bot</h3>
+            <div id="hub-bot-matrix" class="kv-list"></div>
+          </div>
+          <div>
+            <h3>Preferensi Browser Deklaratif (Tanpa Sentuh Cookie)</h3>
+            <div class="form-row">
+              <label for="sel-browser">Browser Pilihan</label>
+              <select id="sel-browser">
+                <option value="none">Tidak memilih</option>
+                <option value="chrome">Google Chrome</option>
+                <option value="edge">Microsoft Edge</option>
+                <option value="firefox">Mozilla Firefox</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="inp-browser-label">Label Profil Opsional (Login tetap manual)</label>
+              <input id="inp-browser-label" type="text" placeholder="Contoh: Kerja / Riset">
+            </div>
+            <p class="muted">MSSHI Connect tidak pernah membuka browser secara paksa, tidak membaca cookie, dan tidak memindahkan sesi login.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- TAB 5: EKSEKUSI & RIWAYAT -->
+    <section id="tab-logs" class="panel">
+      <div class="grid-2">
+        <article class="card">
+          <h2>🧪 Pratinjau Dry-Run &amp; Log Eksekusi</h2>
+          <pre id="dry-run-box" class="console">Klik "Dry-Run Preview" di bawah untuk melihat seluruh rencana aksi sebelum menulis file apa pun.</pre>
+        </article>
+        <article class="card">
+          <h2>⏪ Riwayat Receipt &amp; Rollback 1-Klik</h2>
+          <div id="receipts-list" class="kv-list">Belum ada receipt tersimpan.</div>
+          <div class="card-actions">
+            <button id="btn-refresh-receipts" class="btn btn-ghost btn-sm" type="button">Muat Ulang Receipt</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bottombar">
+    <div class="bottom-left">
+      <button id="btn-dry-run" class="btn btn-secondary" type="button">Dry-Run Preview</button>
+      <button id="btn-apply-open" class="btn btn-primary" type="button">Terapkan Instalasi / Upgrade</button>
+    </div>
+    <div class="bottom-right">
+      <span id="status-msg" class="muted">Siap · 0 panggilan LLM berbayar · Zona 2 &amp; 3 terlindungi</span>
+      <a href="https://saweria.co/muzas" target="_blank" rel="noopener noreferrer" class="saweria-link">Dukung proyek open-source ini via Saweria ↗</a>
+    </div>
+  </footer>
+
+  <!-- MODAL KONFIRMASI WAJIB -->
+  <div id="confirm-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3>🛡️ Konfirmasi Pemasangan / Upgrade Aman (Zona 1)</h3>
+      <div id="confirm-summary" class="console"></div>
+      <label class="confirm-check">
+        <input id="chk-confirm-zone2" type="checkbox">
+        <span>Saya memahami <strong>Zona 2</strong> (provider, model, endpoint, API key, <code>.env</code>, <code>SOUL.md</code> kustom) &amp; <strong>Zona 3</strong> tidak akan diubah.</span>
+      </label>
+      <div class="card-actions">
+        <button id="btn-confirm-cancel" class="btn btn-ghost" type="button">Batal</button>
+        <button id="btn-confirm-go" class="btn btn-primary" type="button" disabled>Lanjutkan Pemasangan Aman</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHANGELOG -->
+  <div id="changelog-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3>📜 Pratinjau CHANGELOG GitHub</h3>
+      <pre id="changelog-body" class="console"></pre>
+      <div class="card-actions">
+        <button id="btn-changelog-close" class="btn btn-secondary" type="button">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SMART UPDATE: SISTEM AUTO TANPA TANYA vs PILIH FITUR TERTENTU -->
+  <div id="feature-prompt-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3>⚡ Update Sistem Otomatis &amp; Pilihan Fitur Baru</h3>
+      <div id="system-silent-banner" class="alert" style="background:rgba(16,185,129,.15);border:1px solid #10B981;color:#A7F3D0"></div>
+      <p class="muted mt-12">⚠️ <strong>Peringatan Fitur Opsional Baru:</strong> Centang fitur yang ingin Anda ikut pasang, atau hilangkan centang bila tidak ingin memasangnya:</p>
+      <div id="feature-prompt-list" class="check-list mt-8"></div>
+      <div class="card-actions mt-16">
+        <button id="btn-feature-skip-all" class="btn btn-ghost" type="button">Lewati Semua Fitur (Ambil Update Sistem Saja)</button>
+        <button id="btn-feature-apply-selected" class="btn btn-primary" type="button">Terapkan Update Sistem + Fitur Terpilih</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

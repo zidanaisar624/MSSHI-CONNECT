@@ -1,0 +1,13 @@
+/target/
+/dist/
+/node_modules/
+*.log
+.DS_Store
+Thumbs.db
+.msshi-tmp-*
+.update-staging/
+.update-backup/
+connect-app-prefs.json
+connect-hub-mapping.json
+connect-receipts/
+connect-cache/
