@@ -45,6 +45,7 @@ pub fn default_catalog() -> OptionCatalog {
         core_plugins: vec![
             "msshi-team-routing (msshi_find_skill 4-lapis)".into(),
             "msshi-interaction v0.2.0 (Interaksi 2 Tipe hemat token)".into(),
+            "cindy-grand-plan (gerbang perencanaan besar interaktif lintas 5 bot)".into(),
             "msshi-auto-trim (MSSHITrim lossless JSON)".into(),
             "anti-slop (filter kualitas prosa, UI & kode lintas 5 bot)".into(),
             "caveman (ringkas token)".into(),
@@ -63,7 +64,7 @@ pub fn default_catalog() -> OptionCatalog {
             ClientPreset {
                 id: "konten".into(),
                 label: "2. Konten Kreasi".into(),
-                subtitle: "Kiki-Chii · Filmmaking S2, Higgsfield 9 modul, BRAG + Opt-in Blender MCP, RAEA & Lemo-Opuscar".into(),
+                subtitle: "Kiki-Chii · Filmmaking S2, Higgsfield 9 modul, BRAG + Opt-in Blender MCP, RAEA, Lemo-Opuscar & Meshy 3D".into(),
                 mode: "muza-preset".into(),
                 default_bot: "auto".into(),
                 recommended_addons: vec!["imagination-studio".into(), "lemo-opuscar".into()],
@@ -98,7 +99,7 @@ pub fn default_catalog() -> OptionCatalog {
             ClientPreset {
                 id: "muza-full".into(),
                 label: "5. Kombinasi — Preset MuZA (5 Bot)".into(),
-                subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.0 · 79 Skill Bundel + 5 Opt-in)".into(),
+                subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 80 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)".into(),
                 mode: "muza-preset".into(),
                 default_bot: "auto".into(),
                 recommended_addons: vec!["dreaming".into()],
@@ -149,6 +150,15 @@ pub fn default_catalog() -> OptionCatalog {
                 disk_estimate: "< 2 MB cache teks".into(),
                 ram_note: "0 MB idle".into(),
                 os_note: "Opt-in di Core (--with-lemo-opuscar · aktif otomatis di repo MFA Filmmaking)".into(),
+                default_enabled: false,
+            },
+            AddonOption {
+                id: "meshy-3d-generation".into(),
+                name: "Meshy 3D Agent (Text/Image to 3D GLB/FBX/OBJ/STL)".into(),
+                owner_bot: "Kiki-Chii".into(),
+                disk_estimate: "< 1 MB wrapper".into(),
+                ram_note: "0 MB idle".into(),
+                os_note: "Opt-in (--with-meshy-3d · Node >= 22.12 + meshy-cli@0.8 + device login)".into(),
                 default_enabled: false,
             },
             AddonOption {

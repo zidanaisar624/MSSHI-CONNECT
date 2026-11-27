@@ -70,7 +70,7 @@ test("Dry-run command builder enforces Auto-Temp D: redirect and light/addon fla
     platform: "hermes",
     default_bot: "auto",
     light_low_ram: true,
-    addons: ["rea", "imagination-studio", "mcp-for-blender", "raea", "lemo-opuscar"],
+    addons: ["rea", "imagination-studio", "mcp-for-blender", "raea", "lemo-opuscar", "meshy-3d-generation"],
     context_sources: ["open-code-review"],
     connect_mode: "auto-reconnect",
   });
@@ -81,6 +81,7 @@ test("Dry-run command builder enforces Auto-Temp D: redirect and light/addon fla
   assert.ok(dry.command_args.includes("--with-blender-mcp"));
   assert.ok(dry.command_args.includes("--with-raea"));
   assert.ok(dry.command_args.includes("--with-lemo-opuscar"));
+  assert.ok(dry.command_args.includes("--with-meshy-3d"));
 });
 
 test("GitHub ETag 304 caching and offline fallback work gracefully", async () => {

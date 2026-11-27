@@ -7,7 +7,7 @@ pub const APP_REPO_URL: &str = "https://github.com/zidanaisar624/MSSHI-CONNECT";
 pub const DOCTOR_REPO_URL: &str = "https://github.com/zidanaisar624/MSSHI-DOCTOR";
 pub const HERMES_OFFICIAL_URL: &str = "https://hermes-agent.nousresearch.com/";
 pub const SAWERIA_URL: &str = "https://saweria.co/muzas";
-pub const DEFAULT_REF: &str = "v3.2.0";
+pub const DEFAULT_REF: &str = "v3.2.1";
 
 pub const ALLOWED_GITHUB_HOSTS: &[&str] = &[
     "api.github.com",
@@ -21,6 +21,7 @@ pub const ALLOWED_GITHUB_HOSTS: &[&str] = &[
 /// Zone 1: Core MSSHI directories allowed for managed install/upgrade after preview.
 pub const ZONE1_DIRS: &[&str] = &[
     "scripts",
+    "crates",
     "hermes_plugins",
     "configs",
     "skills",

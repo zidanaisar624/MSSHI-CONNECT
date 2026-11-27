@@ -85,6 +85,9 @@ pub fn build_dry_run(req: &InstallPlanRequest) -> InstallDryRun {
     if req.addons.iter().any(|a| a == "lemo-opuscar") {
         args.push("--with-lemo-opuscar".to_string());
     }
+    if req.addons.iter().any(|a| a == "meshy-3d-generation") {
+        args.push("--with-meshy-3d".to_string());
+    }
     if !req.copy_pdf_manual {
         args.push("--no-pdf".to_string());
     }
@@ -96,7 +99,7 @@ pub fn build_dry_run(req: &InstallPlanRequest) -> InstallDryRun {
             "timesfm" => est_mb += 1800,
             "omnivoice" => est_mb += 2000,
             "learnloop" | "dreaming" | "mcp-for-blender" | "lemo-opuscar" => est_mb += 2,
-            "raea" | "imagination-studio" => est_mb += 1,
+            "raea" | "imagination-studio" | "meshy-3d-generation" => est_mb += 1,
             _ => {}
         }
     }

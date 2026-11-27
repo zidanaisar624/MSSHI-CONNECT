@@ -22,7 +22,7 @@ export const CONSTANTS = {
   APP_VERSION: "1.0.0",
   UPSTREAM_FULL_NAME: "zidanaisar624/MSSHI-Mega-Semar-Sang-Hyang-Ismaya",
   SAWERIA_URL: "https://saweria.co/muzas",
-  DEFAULT_REF: "v3.2.0",
+  DEFAULT_REF: "v3.2.1",
   ALLOWED_HOSTS: new Set([
     "api.github.com",
     "raw.githubusercontent.com",
@@ -101,6 +101,7 @@ export function getOptionCatalog() {
     core_plugins: [
       "msshi-team-routing (msshi_find_skill 4-lapis)",
       "msshi-interaction v0.2.0 (Interaksi 2 Tipe hemat token)",
+      "cindy-grand-plan (gerbang perencanaan besar interaktif lintas 5 bot)",
       "msshi-auto-trim (MSSHITrim lossless JSON)",
       "anti-slop (filter kualitas prosa, UI & kode lintas 5 bot)",
       "caveman (ringkas token)",
@@ -108,10 +109,10 @@ export function getOptionCatalog() {
     ],
     presets: [
       { id: "belajar", label: "1. Belajar", subtitle: "Shizuka & Yukino · Chalk, LearnLoop, OSSU CS, Anti-Slop", mode: "academic-mahasiswa", default_bot: "auto", recommended_addons: ["learnloop"], recommended_sources: ["ossu"] },
-      { id: "konten", label: "2. Konten Kreasi", subtitle: "Kiki-Chii · Filmmaking S2, Higgsfield 9 modul, BRAG + Opt-in Blender MCP, RAEA & Lemo-Opuscar", mode: "muza-preset", default_bot: "auto", recommended_addons: ["imagination-studio", "lemo-opuscar"], recommended_sources: ["rea-video"] },
+      { id: "konten", label: "2. Konten Kreasi", subtitle: "Kiki-Chii · Filmmaking S2, Higgsfield 9 modul, BRAG + Opt-in Blender MCP, RAEA, Lemo-Opuscar & Meshy 3D", mode: "muza-preset", default_bot: "auto", recommended_addons: ["imagination-studio", "lemo-opuscar"], recommended_sources: ["rea-video"] },
       { id: "riset-skripsi", label: "3. Riset & Skripsi", subtitle: "Val + Shizuka · Riset Untuk S1–S3 (Diutamakan S1 Skripsi) v1.1 .docx, Colab, opsional TimesFM", mode: "academic-mahasiswa", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
       { id: "coding-security", label: "4. Coding & Security", subtitle: "Shikaku · OpenCodeReview, ast-grep, Knip, Modern Web, Rust (Hot-Path), Grim Prompter, BugHunter", mode: "muza-preset", default_bot: "auto", recommended_addons: [], recommended_sources: ["open-code-review", "ast-grep", "knip", "modern-web-guidance", "rust-anything", "grim-prompter", "claude-bughunter"] },
-      { id: "muza-full", label: "5. Kombinasi — Preset MuZA (5 Bot)", subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.0 · 79 Skill Bundel + 5 Opt-in)", mode: "muza-preset", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
+      { id: "muza-full", label: "5. Kombinasi — Preset MuZA (5 Bot)", subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 80 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)", mode: "muza-preset", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
     ],
     addons: [
       { id: "rea", name: "REA (Reverse Engineer Anything)", owner_bot: "Shikaku", disk_estimate: "~180 MB", ram_note: "0 MB idle", os_note: "Opt-in aman (--with-rea · default OFF)", default_enabled: false },
@@ -119,6 +120,7 @@ export function getOptionCatalog() {
       { id: "mcp-for-blender", name: "MCP for Blender (Opt-in 3D Studio)", owner_bot: "Kiki-Chii", disk_estimate: "< 2 MB", ram_note: "0 MB idle", os_note: "Opt-in (--with-blender-mcp · menggantikan CLI-Anything blender)", default_enabled: false },
       { id: "raea", name: "RAEA (React/TS + Bevy GPU Video/VFX)", owner_bot: "Kiki-Chii", disk_estimate: "< 1 MB wrapper", ram_note: "0 MB idle", os_note: "Opt-in (--with-raea · biner eksternal FSL-1.1-ALv2 dipasang terpisah)", default_enabled: false },
       { id: "lemo-opuscar", name: "Lemo-Opuscar (15 Kategori / 99 Gaya Sinema Kode)", owner_bot: "Kiki-Chii", disk_estimate: "< 2 MB cache teks", ram_note: "0 MB idle", os_note: "Opt-in di Core (--with-lemo-opuscar · aktif otomatis di repo MFA Filmmaking)", default_enabled: false },
+      { id: "meshy-3d-generation", name: "Meshy 3D Agent (Text/Image to 3D GLB/FBX/OBJ/STL)", owner_bot: "Kiki-Chii", disk_estimate: "< 1 MB wrapper", ram_note: "0 MB idle", os_note: "Opt-in (--with-meshy-3d · Node >= 22.12 + meshy-cli@0.8 + device login)", default_enabled: false },
       { id: "learnloop", name: "LearnLoop (AGPL-3.0 opt-in)", owner_bot: "Shizuka & Yukino", disk_estimate: "< 2 MB", ram_note: "0 MB idle", os_note: "Semua OS", default_enabled: false },
       { id: "codecoach", name: "CodeCoach", owner_bot: "Shikaku", disk_estimate: "0 MB di Windows", ram_note: "0 MB", os_note: "Sandbox penuh Linux/WSL2; Windows fallback ke Shikaku", default_enabled: false },
       { id: "dreaming", name: "Dreaming Lokal (Offline)", owner_bot: "Val", disk_estimate: "~2 MB", ram_note: "0 MB idle · 0 LLM call", os_note: "Jadwal 03.00 WIB opsional", default_enabled: false },
@@ -182,7 +184,7 @@ export function classifyMsshiUpdate(targetRef, changedPaths = null, prefs = {}) 
   const policy = prefs.auto_upgrade_policy || "smart_split";
   const autoOn = prefs.auto_upgrade_enabled !== false;
   return {
-    target_ref: targetRef || "v3.2.0",
+    target_ref: targetRef || "v3.2.1",
     system_patches: systemPatches,
     system_auto_apply_silent: autoOn && (policy === "smart_split" || policy === "auto_apply_zone1") && systemPatches.length > 0,
     optional_features: optionalFeatures,
@@ -204,6 +206,7 @@ export function buildDryRun(req) {
   if ((req.addons || []).includes("mcp-for-blender")) args.push("--with-blender-mcp");
   if ((req.addons || []).includes("raea")) args.push("--with-raea");
   if ((req.addons || []).includes("lemo-opuscar")) args.push("--with-lemo-opuscar");
+  if ((req.addons || []).includes("meshy-3d-generation")) args.push("--with-meshy-3d");
   if (req.copy_pdf_manual === false) args.push("--no-pdf");
 
   let estMb = req.light_low_ram ? 35 : 48;
@@ -212,7 +215,7 @@ export function buildDryRun(req) {
     else if (a === "timesfm") estMb += 1800;
     else if (a === "omnivoice") estMb += 2000;
     else if (a === "learnloop" || a === "dreaming" || a === "mcp-for-blender" || a === "lemo-opuscar") estMb += 2;
-    else if (a === "raea" || a === "imagination-studio") estMb += 1;
+    else if (a === "raea" || a === "imagination-studio" || a === "meshy-3d-generation") estMb += 1;
   }
 
   const msshiHome = req.msshi_home || "D:\\MSSHI";
@@ -222,7 +225,7 @@ export function buildDryRun(req) {
 
   const steps = [
     `Arahkan TEMP/TMP ke ${tempRedirect} agar Drive C: aman.`,
-    `Sinkronkan Zona 1 MSSHI (${req.target_ref || "v3.2.0"}) ke ${msshiHome} (backup receipt otomatis).`,
+    `Sinkronkan Zona 1 MSSHI (${req.target_ref || "v3.2.1"}) ke ${msshiHome} (backup receipt otomatis).`,
     `Jalankan msshi ${args.join(" ")} (Hermes Home: ${hermesHome}).`,
   ];
   if ((req.context_sources || []).length) {
@@ -233,7 +236,7 @@ export function buildDryRun(req) {
   }
 
   return {
-    target_ref: req.target_ref || "v3.2.0",
+    target_ref: req.target_ref || "v3.2.1",
     commit_sha: req.commit_sha || null,
     msshi_home: msshiHome,
     hermes_home: hermesHome,
@@ -425,7 +428,7 @@ export function createConnectServer({ port = 0, dataDir = null, fetcher = fetch 
         auto_upgrade_enabled: true,
         auto_upgrade_policy: "smart_split",
         channel: "stable",
-        selected_ref: "v3.2.0",
+        selected_ref: "v3.2.1",
         approved_features: [],
         skipped_features: [],
         local_source_path: null,
@@ -481,7 +484,7 @@ export function createConnectServer({ port = 0, dataDir = null, fetcher = fetch 
           auto_upgrade_enabled: Boolean(body.auto_upgrade_enabled),
           auto_upgrade_policy: validPolicies.has(body.auto_upgrade_policy) ? body.auto_upgrade_policy : "smart_split",
           channel: body.channel === "main" ? "main" : "stable",
-          selected_ref: String(body.selected_ref || "v3.2.0"),
+          selected_ref: String(body.selected_ref || "v3.2.1"),
           approved_features: Array.isArray(body.approved_features) ? body.approved_features.map(String) : [],
           skipped_features: Array.isArray(body.skipped_features) ? body.skipped_features.map(String) : [],
           local_source_path: body.local_source_path || null,
