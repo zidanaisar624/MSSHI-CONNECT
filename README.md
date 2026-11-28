@@ -19,7 +19,7 @@ Aplikasi desktop dan CLI mandiri berbasis **Rust + Vanilla JavaScript** untuk me
 3. Klik **Pasang CLI Core v3.2.2** untuk memasang launcher resmi GitHub. Proses ini memerlukan Git, Python 3.10+, internet, dan konfirmasi pengguna. Connect memeriksa commit rilis yang tetap sebelum pemasangan.
 4. Setelah berhasil, buka folder `bin` pada lokasi MSSHI yang ditampilkan. Jalankan `.\msshi.cmd setup` dari PowerShell untuk menentukan preset dan pengaturan Hermes.
 
-Connect 1.0.2 memasang tag stabil v3.2.2 (82 skill bundel + 6 opt-in, 76 sumber upstream). Katalog versi GitHub dapat menampilkan pembaruan yang lebih baru. Pilihan versi dan preferensi Auto-Upgrade di Connect merupakan data rencana hingga tersedia mekanisme penerapan versi tersebut. Memeriksa ulang koneksi menyimpan peta aplikasi, dan konfigurasi profil dilanjutkan melalui wizard Core. Untuk pemulihan file yang telah dicatat Doctor, gunakan aplikasi [MSSHI Doctor](https://github.com/zidanaisar624/MSSHI-DOCTOR/releases/tag/v1.2.1).
+Connect 1.0.2 memasang tag stabil v3.2.2 (82 skill bundel + 6 opt-in, 76 sumber upstream). Katalog versi GitHub dapat menampilkan pembaruan yang lebih baru. Pilihan versi dan preferensi Auto-Upgrade di Connect merupakan data rencana hingga tersedia mekanisme penerapan versi tersebut. Memeriksa ulang koneksi menyimpan peta aplikasi, dan konfigurasi profil dilanjutkan melalui wizard Core. Untuk pemulihan file yang telah dicatat Doctor, gunakan aplikasi [MSSHI Doctor](https://github.com/zidanaisar624/MSSHI-DOCTOR/releases/tag/v1.2.2).
 
 Pemeriksaan Connect tidak memakai model AI. Aplikasi memisahkan pemasangan launcher dari setup bot. Pemilihan provider, model, alamat endpoint, dan kunci API dilakukan pengguna.
 
