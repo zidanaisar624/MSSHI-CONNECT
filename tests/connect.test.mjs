@@ -149,6 +149,16 @@ test("Loopback server enforces CSRF token, persists prefs/receipts, and locks au
       body: JSON.stringify({ target_ref: "v3.1.2", msshi_home: tmp, hermes_home: tmp, mode: "muza-preset" }),
     })).json();
     assert.equal(applied.ok, true);
+    assert.equal(applied.receipt.state, "PLANNED");
+    assert.equal(applied.receipt.can_rollback, false);
+    assert.equal(applied.receipt.plan.mode, "muza-preset");
+    for (const [confirm, expected] of [["", 400], ["core-v3.2.1", 409]]) {
+      const attempt = await fetch(`${base}/api/install/core`, {
+        method: "POST", headers, body: JSON.stringify({confirm}),
+      });
+      assert.equal(attempt.status, expected);
+    }
+    assert.equal(fs.existsSync(path.join(tmp, "bin")), false);
     assert.ok(applied.receipt.receipt_id.startsWith("connect-"));
 
     const hub = scanConnectHub(true);
@@ -164,7 +174,7 @@ test("Loopback server enforces CSRF token, persists prefs/receipts, and locks au
   }
 });
 
-test("Smart 2-Tier Update Classifier applies system patches silently without prompting and warns/prompts per feature", () => {
+test("Smart 2-Tier Update Classifier classifies example system patches and optional features according to preferences", () => {
   const paths = [
     "scripts/msshi_cli.py",
     "hermes_plugins/msshi-auto-trim/plugin.py",

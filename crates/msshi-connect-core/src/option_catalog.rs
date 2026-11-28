@@ -99,7 +99,7 @@ pub fn default_catalog() -> OptionCatalog {
             ClientPreset {
                 id: "muza-full".into(),
                 label: "5. Kombinasi — Preset MuZA (5 Bot)".into(),
-                subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 80 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)".into(),
+                subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 81 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)".into(),
                 mode: "muza-preset".into(),
                 default_bot: "auto".into(),
                 recommended_addons: vec!["dreaming".into()],

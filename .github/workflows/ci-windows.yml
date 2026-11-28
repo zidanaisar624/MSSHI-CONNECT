@@ -1,8 +1,9 @@
-name: Build & Verify MSSHI Installer & Connect (Rust + JS)
+name: Build and test MSSHI Connect on Windows
 
 on:
   push:
     branches: [main]
+    tags: ['v1.0.0']
   pull_request:
   workflow_dispatch:
 
@@ -12,45 +13,53 @@ permissions:
 jobs:
   windows-x64:
     runs-on: windows-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Uji UI & Bridge JavaScript (Node)
+      - name: Test the JavaScript interface
         run: node --test tests/connect.test.mjs
-      - name: Uji Mesin Inti Rust
-        run: cargo test --workspace --verbose
-      - name: Build Biner Rilis Rust (Ringan Win10 4 GB)
-        run: cargo build --release --bin msshi-connect
-      - name: Kemas Paket Portabel Windows x64 (.exe Mandiri + .zip) + SHA256SUMS
+      - name: Test the Rust engine and embedded interface
+        run: cargo test --workspace --locked
+      - name: Build release executable
+        run: cargo build --locked --release --bin msshi-connect
+      - name: Test and package portable files
         shell: pwsh
-        run: |
-          $ver = "1.0.0"
-          $stage = "dist/MSSHI-Connect-$ver-windows-x64"
-          New-Item -ItemType Directory -Force -Path "$stage/assets", "$stage/ui" | Out-Null
-          $portableExe = "dist/MSSHI-Connect-Portable-win-x64.exe"
-          Copy-Item "target/release/msshi-connect.exe" $portableExe -Force
-          Copy-Item "target/release/msshi-connect.exe" "$stage/MSSHI-Connect.exe" -Force
-          Copy-Item "MSSHI_Connect.bat", "msshi-connect.cmd", "LICENSE", "README.md" "$stage/"
-          Copy-Item "assets/*" "$stage/assets/" -Recurse
-          Copy-Item "ui/*" "$stage/ui/" -Recurse
-          $zip = "dist/MSSHI-Connect-$ver-windows-x64.zip"
-          Compress-Archive -Path "$stage/*" -DestinationPath $zip -Force
-          $hashExe = (Get-FileHash $portableExe -Algorithm SHA256).Hash.ToLower()
-          $hashZip = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
-          @(
-            "$hashExe  MSSHI-Connect-Portable-win-x64.exe",
-            "$hashZip  MSSHI-Connect-$ver-windows-x64.zip"
-          ) | Out-File -Encoding ascii "dist/SHA256SUMS.txt"
-      - name: Upload Artifact Windows x64
-        uses: actions/upload-artifact@v4
+        run: ./tools/package-windows.ps1
+      - uses: actions/upload-artifact@v4
         with:
           name: MSSHI-Connect-Windows-x64
           path: |
             dist/MSSHI-Connect-Portable-win-x64.exe
-            dist/MSSHI-Connect-*-windows-x64.zip
+            dist/MSSHI-Connect-1.0.0-windows-x64.zip
             dist/SHA256SUMS.txt
           if-no-files-found: error
+
+  release:
+    if: github.ref == 'refs/tags/v1.0.0'
+    needs: windows-x64
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: MSSHI-Connect-Windows-x64
+          path: dist
+      - name: Verify and publish the three release assets
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          $names = @("MSSHI-Connect-Portable-win-x64.exe","MSSHI-Connect-1.0.0-windows-x64.zip")
+          $manifest = @(Get-Content -LiteralPath dist/SHA256SUMS.txt)
+          if ($manifest.Count -ne $names.Count) { throw "Unexpected release manifest" }
+          foreach ($name in $names) {
+            $hash = (Get-FileHash -LiteralPath "dist/$name" -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($manifest -cnotcontains "$hash  $name") { throw "Checksum mismatch for $name" }
+          }
+          gh release create "$env:TAG" dist/MSSHI-Connect-Portable-win-x64.exe dist/MSSHI-Connect-1.0.0-windows-x64.zip dist/SHA256SUMS.txt --repo "$env:REPOSITORY" --verify-tag --title "MSSHI Connect $env:TAG" --notes "Buka EXE atau ekstrak ZIP di Windows x64. Panduan awal tersedia dalam README."

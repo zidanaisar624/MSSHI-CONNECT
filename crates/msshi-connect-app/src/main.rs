@@ -17,7 +17,7 @@ Pemakaian:\n\
   msshi-connect --probe [--json]            Cek perangkat, Hermes, RAM, Drive & MSSHI Doctor\n\
   msshi-connect --check-updates [--json]    Cek rilis & tag GitHub (ETag cache)\n\
   msshi-connect --connect-scan [--json]     Pindai aplikasi untuk Connect Hub (0 LLM call)\n\
-  msshi-connect --receipts [--json]         Daftar receipt backup & rollback\n\
+  msshi-connect --receipts [--json]         Daftar rencana yang telah disimpan\n\
   msshi-connect --version                   Tampilkan versi aplikasi\n";
 
 fn default_cache_dir() -> PathBuf {
@@ -37,6 +37,11 @@ fn main() {
         return;
     }
 
+    if args.iter().any(|a| a == "--self-check") {
+        if !server::embedded_interface_ok() { process::exit(1); }
+        println!("OK");
+        return;
+    }
     let as_json = args.iter().any(|a| a == "--json");
     let probe = collect_system_probe(None, None);
     let msshi_home = PathBuf::from(&probe.msshi_home);

@@ -112,7 +112,7 @@ export function getOptionCatalog() {
       { id: "konten", label: "2. Konten Kreasi", subtitle: "Kiki-Chii · Filmmaking S2, Higgsfield 9 modul, BRAG + Opt-in Blender MCP, RAEA, Lemo-Opuscar & Meshy 3D", mode: "muza-preset", default_bot: "auto", recommended_addons: ["imagination-studio", "lemo-opuscar"], recommended_sources: ["rea-video"] },
       { id: "riset-skripsi", label: "3. Riset & Skripsi", subtitle: "Val + Shizuka · Riset Untuk S1–S3 (Diutamakan S1 Skripsi) v1.1 .docx, Colab, opsional TimesFM", mode: "academic-mahasiswa", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
       { id: "coding-security", label: "4. Coding & Security", subtitle: "Shikaku · OpenCodeReview, ast-grep, Knip, Modern Web, Rust (Hot-Path), Grim Prompter, BugHunter", mode: "muza-preset", default_bot: "auto", recommended_addons: [], recommended_sources: ["open-code-review", "ast-grep", "knip", "modern-web-guidance", "rust-anything", "grim-prompter", "claude-bughunter"] },
-      { id: "muza-full", label: "5. Kombinasi — Preset MuZA (5 Bot)", subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 80 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)", mode: "muza-preset", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
+      { id: "muza-full", label: "5. Kombinasi — Preset MuZA (5 Bot)", subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 81 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)", mode: "muza-preset", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
     ],
     addons: [
       { id: "rea", name: "REA (Reverse Engineer Anything)", owner_bot: "Shikaku", disk_estimate: "~180 MB", ram_note: "0 MB idle", os_note: "Opt-in aman (--with-rea · default OFF)", default_enabled: false },
@@ -506,9 +506,16 @@ export function createConnectServer({ port = 0, dataDir = null, fetcher = fetch 
         const epoch = Math.floor(Date.now() / 1000);
         const baseId = `connect-${epoch}`;
         const receiptId = fs.existsSync(path.join(receiptsDir, `${baseId}.json`)) ? `${baseId}-${Date.now() % 1000}` : baseId;
-        const receipt = { receipt_id: receiptId, created_epoch: epoch, action: "msshi-connect-install", target_ref: dry.target_ref, commit_sha: dry.commit_sha, msshi_home: dry.msshi_home, hermes_home: dry.hermes_home, mode: plan.mode || "muza-preset", state: "APPLIED", can_rollback: true };
+        const keys = ["target_ref", "commit_sha", "msshi_home", "hermes_home", "mode", "platform", "default_bot", "light_low_ram", "copy_pdf_manual", "pdf_version", "addons", "context_sources", "connect_mode", "local_source_path"];
+        const selections = Object.fromEntries(keys.filter((key) => Object.hasOwn(plan, key)).map((key) => [key, plan[key]]));
+        const receipt = { plan: selections, receipt_id: receiptId, created_epoch: epoch, action: "msshi-connect-plan", target_ref: dry.target_ref, commit_sha: dry.commit_sha, msshi_home: dry.msshi_home, hermes_home: dry.hermes_home, mode: plan.mode || "muza-preset", state: "PLANNED", can_rollback: false };
         atomicWriteAclSafe(path.join(receiptsDir, `${receiptId}.json`), JSON.stringify(receipt, null, 2));
         return sendJson(200, { ok: true, dry_run: dry, receipt });
+      }
+      if (req.method === "POST" && urlPath === "/api/install/core") {
+        const request = await readJsonBody(req);
+        if (request.confirm !== "core-v3.2.1") return sendJson(400,{error:"Konfirmasi Core v3.2.1 dahulu."});
+        return sendJson(409,{error:"Untuk memasang CLI Core v3.2.1, gunakan EXE Windows di GitHub Releases."});
       }
       if (req.method === "GET" && urlPath === "/api/receipts") {
         if (!fs.existsSync(receiptsDir)) return sendJson(200, []);

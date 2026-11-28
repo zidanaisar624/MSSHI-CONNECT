@@ -114,6 +114,7 @@ pub fn detect_doctor_path() -> Option<PathBuf> {
 /// Fast zero-subprocess resolver for default MSSHI_HOME so lightweight HTTP endpoints
 /// (/api/health, /api/catalog, /api/prefs, /api/receipts) never spawn PowerShell.
 pub fn resolve_default_msshi_home() -> PathBuf {
+    if let Some(home) = std::env::var_os("MSSHI_HOME").filter(|p| !p.is_empty()) { return PathBuf::from(home); }
     if cfg!(windows) && Path::new(r"D:\").is_dir() {
         return PathBuf::from(r"D:\MSSHI");
     }
@@ -130,6 +131,7 @@ pub fn collect_system_probe(explicit_msshi: Option<&Path>, explicit_hermes: Opti
 
     let msshi_home = explicit_msshi
         .map(PathBuf::from)
+        .or_else(|| std::env::var_os("MSSHI_HOME").map(PathBuf::from))
         .unwrap_or_else(|| {
             if has_d {
                 PathBuf::from(r"D:\MSSHI")
@@ -142,6 +144,7 @@ pub fn collect_system_probe(explicit_msshi: Option<&Path>, explicit_hermes: Opti
 
     let hermes_home = explicit_hermes
         .map(PathBuf::from)
+        .or_else(|| std::env::var_os("HERMES_HOME").map(PathBuf::from))
         .unwrap_or_else(|| {
             if has_d {
                 PathBuf::from(r"D:\HermesData")

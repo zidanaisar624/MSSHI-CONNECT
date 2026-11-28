@@ -4,6 +4,11 @@ import { applyPresetToState, createInitialState, resolveEffectiveRef } from "./s
 const state = createInitialState();
 const $ = (id) => document.getElementById(id);
 
+function escapeHtml(value) {
+  const entities = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  return String(value).replace(/[&<>"']/g, (character) => entities[character]);
+}
+
 function setStatus(msg) {
   $("status-msg").textContent = msg;
 }
@@ -42,11 +47,11 @@ function renderProbe() {
     ["MSSHI Doctor", p.doctor_detected ? `Terdeteksi (${p.doctor_path})` : "Belum terdeteksi (Repo terpisah)"],
   ];
   $("probe-list").innerHTML = rows
-    .map(([k, v]) => `<div class="kv-item"><span class="kv-key">${k}</span><strong>${v}</strong></div>`)
+    .map(([k, v]) => `<div class="kv-item"><span class="kv-key">${escapeHtml(k)}</span><strong>${escapeHtml(v)}</strong></div>`)
     .join("");
 
   $("drive-pills").innerHTML = (p.drives || [])
-    .map((d) => `<span class="pill ${d.low_space_warning ? "pill-amber" : "pill-ok"}">Drive ${d.letter} ${d.free_gb} GB bebas</span>`)
+    .map((d) => `<span class="pill ${d.low_space_warning ? "pill-amber" : "pill-ok"}">Drive ${escapeHtml(d.letter)} ${escapeHtml(d.free_gb)} GB bebas</span>`)
     .join("");
 }
 
@@ -67,9 +72,7 @@ function renderGitHubAndPrefs() {
     $("badge-github").textContent = `GitHub: ${g.connection_status} (${g.latest_stable})`;
     $("badge-github").className = `pill ${ok ? "pill-ok" : "pill-amber"}`;
     const sel = $("sel-version");
-    sel.innerHTML = (g.refs || [])
-      .map((r) => `<option value="${r.name}">${r.name} — ${r.summary}</option>`)
-      .join("");
+    sel.replaceChildren(...(g.refs || []).map((ref) => new Option(`${ref.name} — ${ref.summary}`, ref.name)));
     sel.value = pr.selected_ref || g.latest_stable;
   }
 }
@@ -81,6 +84,7 @@ function renderCatalog() {
   $("sel-platform").innerHTML = c.target_platforms.map((p) => `<option value="${p}">${p}</option>`).join("");
   $("sel-mode").value = state.setup.mode;
   $("sel-platform").value = state.setup.platform;
+  $("sel-default-bot").value = state.setup.default_bot;
 
   $("core-plugins-list").innerHTML = c.core_plugins.map((p) => `<span class="pill pill-ok">✓ ${p}</span>`).join("");
 
@@ -151,24 +155,24 @@ function renderConnectHub() {
     <tbody>${h.apps
       .map((a) => {
         const cls = a.status === "TERDETEKSI" ? "pill-ok" : a.status.includes("LIGHT") ? "pill-amber" : "pill-danger";
-        return `<tr><td><strong>${a.label}</strong></td><td>${a.kind}</td><td><span class="pill ${cls}">${a.status}</span></td><td>${a.recommended_bots.join(", ")}</td></tr>`;
+        return `<tr><td><strong>${escapeHtml(a.label)}</strong></td><td>${escapeHtml(a.kind)}</td><td><span class="pill ${cls}">${escapeHtml(a.status)}</span></td><td>${escapeHtml(a.recommended_bots.join(", "))}</td></tr>`;
       })
       .join("")}</tbody></table>`;
 
   $("hub-bot-matrix").innerHTML = Object.entries(h.bot_mappings || {})
-    .map(([bot, list]) => `<div class="kv-item"><span class="kv-key">@${bot}</span><strong>${list.length ? list.join(", ") : "-"}</strong></div>`)
+    .map(([bot, list]) => `<div class="kv-item"><span class="kv-key">@${escapeHtml(bot)}</span><strong>${escapeHtml(list.length ? list.join(", ") : "-")}</strong></div>`)
     .join("");
 }
 
 function renderReceipts() {
   const list = state.receipts || [];
   if (!list.length) {
-    $("receipts-list").innerHTML = `<div class="kv-item"><span class="kv-key">Riwayat</span><span>Belum ada receipt instalasi/upgrade.</span></div>`;
+    $("receipts-list").innerHTML = `<div class="kv-item"><span class="kv-key">Riwayat</span><span>Belum ada rencana yang disimpan.</span></div>`;
     return;
   }
   $("receipts-list").innerHTML = list
-    .map((r) => `<div class="kv-item"><div><strong>${r.receipt_id}</strong><div class="muted">${r.target_ref} · ${r.mode} · ${r.state}</div></div>
-      <span class="pill pill-ok">${r.can_rollback ? "Rollback Siap" : r.state}</span></div>`)
+    .map((r) => `<div class="kv-item"><div><strong>${escapeHtml(r.receipt_id)}</strong><div class="muted">${escapeHtml(r.target_ref)} · ${escapeHtml(r.mode)} · ${escapeHtml(r.state)}</div></div>
+      <span class="pill pill-ok">${r.state === "PLANNED" ? "Rencana" : "Catatan lama"}</span></div>`)
     .join("");
 }
 
@@ -177,7 +181,7 @@ function collectPlanPayload() {
   const foundRef = (state.github?.refs || []).find((r) => r.name === targetRef);
   return {
     target_ref: targetRef,
-    commit_sha: foundRef?.commit_sha || state.github?.main_commit_sha || null,
+    commit_sha: foundRef?.commit_sha || (targetRef === "main" ? state.github?.main_commit_sha : null) || null,
     msshi_home: $("inp-msshi-home").value.trim() || state.setup.msshi_home,
     hermes_home: $("inp-hermes-home").value.trim() || state.setup.hermes_home,
     mode: $("sel-mode").value || state.setup.mode,
@@ -194,6 +198,9 @@ function collectPlanPayload() {
 }
 
 function wireEvents() {
+  for (const [id, key] of [["sel-mode", "mode"], ["sel-platform", "platform"], ["sel-default-bot", "default_bot"]]) {
+    $(id).addEventListener("change", () => { state.setup[key] = $(id).value; });
+  }
   $("btn-auto-on").addEventListener("click", () => { state.prefs.auto_upgrade_enabled = true; renderGitHubAndPrefs(); });
   $("btn-auto-off").addEventListener("click", () => { state.prefs.auto_upgrade_enabled = false; renderGitHubAndPrefs(); });
   $("sel-policy").addEventListener("change", (e) => { state.prefs.auto_upgrade_policy = e.target.value; });
@@ -235,15 +242,15 @@ function wireEvents() {
       body: { target_ref: targetRef },
     });
     $("system-silent-banner").innerHTML = classified.system_auto_apply_silent
-      ? `✓ <strong>Update Masalah Sistem (${classified.system_patches.length} patch inti):</strong> Diterapkan <strong>otomatis di latar belakang tanpa mengganggu Anda</strong> (backup receipt aman).`
-      : `ℹ️ Mode Manual aktif: ${classified.system_patches.length} patch sistem menunggu persetujuan Anda.`;
+      ? `✓ <strong>Update Masalah Sistem (${classified.system_patches.length} patch inti):</strong> Contoh perubahan inti yang termasuk dalam kebijakan pilihan Anda.`
+      : `ℹ️ Mode Manual aktif: ${classified.system_patches.length} contoh perubahan inti untuk ditinjau.`;
 
     $("feature-prompt-list").innerHTML = (classified.optional_features || [])
       .map(
         (f) => `<div class="checkbox-card">
-          <label><input type="checkbox" data-feat="${f.id}" ${f.default_checked ? "checked" : ""}>
-            <strong>${f.title}</strong> <span class="pill pill-amber">${f.disk_impact}</span></label>
-          <p class="muted">${f.warning}</p>
+          <label><input type="checkbox" data-feat="${escapeHtml(f.id)}" ${f.default_checked ? "checked" : ""}>
+            <strong>${escapeHtml(f.title)}</strong> <span class="pill pill-amber">${escapeHtml(f.disk_impact)}</span></label>
+          <p class="muted">${escapeHtml(f.warning)}</p>
         </div>`
       )
       .join("");
@@ -255,7 +262,7 @@ function wireEvents() {
     state.prefs.skipped_features = [...new Set([...(state.prefs.skipped_features || []), ...allIds])];
     state.prefs = await apiRequest("/api/prefs", { method: "PUT", body: state.prefs });
     $("feature-prompt-modal").classList.add("hidden");
-    setStatus("Update sistem diterapkan otomatis; semua fitur baru dilewati sesuai pilihan Anda.");
+    setStatus("Preferensi tersimpan. Semua fitur contoh dilewati.");
   });
 
   $("btn-feature-apply-selected").addEventListener("click", async () => {
@@ -266,7 +273,7 @@ function wireEvents() {
     state.prefs.skipped_features = skipped;
     state.prefs = await apiRequest("/api/prefs", { method: "PUT", body: state.prefs });
     $("feature-prompt-modal").classList.add("hidden");
-    setStatus(`Update sistem otomatis + ${approved.length} fitur terpilih disetujui (${skipped.length} fitur dilewati).`);
+    setStatus(`Preferensi tersimpan. ${approved.length} fitur dipilih dan ${skipped.length} dilewati.`);
   });
 
   $("btn-scan-hub").addEventListener("click", async () => {
@@ -281,7 +288,7 @@ function wireEvents() {
     state.hub.browser_profile_label = $("inp-browser-label").value.trim();
     state.hub = await apiRequest("/api/connect/apply", { method: "POST", body: state.hub });
     renderConnectHub();
-    setStatus("Auto-Reconnect semua bot disimpan (auto_open_on_boot: FALSE).");
+    setStatus("Peta aplikasi tersimpan. Konfigurasi profil bot dilanjutkan melalui setup MSSHI.");
   });
 
   $("btn-save-hub").addEventListener("click", async () => {
@@ -300,6 +307,20 @@ function wireEvents() {
     setStatus(`Dry-Run Preview siap (estimasi ${dry.estimated_download_mb} MB · 0 file diubah).`);
   });
 
+  $("btn-install-core").addEventListener("click", async () => {
+    if (!state.probe) { setStatus("Tunggu sampai deteksi perangkat selesai."); return; }
+    const message = "Unduh CLI Core v3.2.1 resmi dari GitHub ke " + state.probe.msshi_home +
+      "? Memerlukan Git dan Python 3.10+. Preset, add-on, serta konfigurasi profil dapat kamu pilih setelahnya lewat msshi setup.";
+    if (!window.confirm(message)) return;
+    const button = $("btn-install-core");
+    button.disabled = true;
+    setStatus("Menunggu konfirmasi Windows dan pemasangan Core…");
+    try {
+      const result = await apiRequest("/api/install/core", {method:"POST",body:{confirm:"core-v3.2.1"}});
+      setStatus("CLI Core terpasang. Langkah berikutnya: buka " + result.msshi_home + "\\bin dan jalankan .\\msshi.cmd setup di PowerShell.");
+    } catch (e) { setStatus(e.message); }
+    finally { button.disabled = false; }
+  });
   $("btn-apply-open").addEventListener("click", async () => {
     const dry = await apiRequest("/api/install/dry-run", { method: "POST", body: collectPlanPayload() });
     $("confirm-summary").textContent = [
@@ -321,15 +342,15 @@ function wireEvents() {
 
   $("btn-confirm-go").addEventListener("click", async () => {
     $("confirm-modal").classList.add("hidden");
-    setStatus("Menjalankan pemasangan/upgrade aman Zona 1...");
+    setStatus("Menyimpan rencana pilihanmu...");
     try {
       const res = await apiRequest("/api/install/apply", { method: "POST", body: collectPlanPayload() });
       $("dry-run-box").textContent = JSON.stringify(res, null, 2);
       state.receipts = await apiRequest("/api/receipts");
       renderReceipts();
       document.querySelector('.tab[data-tab="logs"]').click();
-      setStatus(`Selesai! Receipt tersimpan: ${res.receipt?.receipt_id || "ok"}`);
-    } catch (e) { setStatus("Gagal menerapkan: " + e.message); }
+      setStatus(`Rencana tersimpan: ${res.receipt?.receipt_id || "ok"}`);
+    } catch (e) { setStatus("Gagal menyimpan rencana: " + e.message); }
   });
 
   $("btn-refresh-receipts").addEventListener("click", async () => {

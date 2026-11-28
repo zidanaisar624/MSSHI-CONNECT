@@ -16,7 +16,7 @@ if exist "%SCRIPT_DIR%target\release\msshi-connect.exe" (
 )
 where node >nul 2>nul
 if errorlevel 1 (
-  echo [ERROR] MSSHI-Connect.exe maupun Node.js belum ditemukan. Pasang Node.js 20+ atau unduh paket portabel Windows x64 dari GitHub Actions.
+  echo [ERROR] MSSHI-Connect.exe maupun Node.js belum ditemukan. Pasang Node.js 20+ atau unduh paket portabel Windows x64 dari GitHub Releases.
   pause
   exit /b 1
 )

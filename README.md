@@ -2,7 +2,7 @@
 
 # <img src="assets/msshi-connect-icon-64.png" width="34" alt=""> MSSHI Installer &amp; Connect
 
-Aplikasi desktop &amp; CLI mandiri (**Rust + Vanilla JavaScript**, 100% terpisah dari `MSSHI Core` dan `MSSHI Doctor`) untuk memasang **MSSHI** ke **Hermes Agent** (Windows 11), memilih **Auto-Upgrade ON/OFF** (termasuk pemisahan cerdas *update masalah sistem otomatis tanpa tanya* vs *fitur baru dengan warning &amp; pilihan per fitur*) atau **Pilih Versi Mandiri** langsung dari GitHub (`v3.2.1`, `v3.1.2`, `main`, dan rilis masa depan), serta menghubungkan **5 Bot ↔ CLI-Anything / Opt-in MCP ↔ Aplikasi** dalam satu antarmuka Cyber-Noir yang sangat ringan *(mengacu pada benchmark efisiensi Win10 RAM 4 GB — saking ringannya komponen MSSHI &amp; Connect sanggup berjalan di spek serendah itu)*.
+Aplikasi desktop dan CLI mandiri berbasis **Rust + Vanilla JavaScript** untuk menyiapkan instalasi MSSHI dan mengenali aplikasi yang dapat digunakan bersama Hermes di Windows. Connect membantu pengguna memeriksa perangkat, menentukan kebutuhan, menyimpan rencana, dan memasang launcher Core resmi setelah konfirmasi.
 
 **Versi 1.0.0** · **Upstream Resmi:** [MSSHI-Mega-Semar-Sang-Hyang-Ismaya (`v3.2.1+`)](https://github.com/zidanaisar624/MSSHI-Mega-Semar-Sang-Hyang-Ismaya) · **Aplikasi Kembaran Diagnostik:** [MSSHI-DOCTOR](https://github.com/zidanaisar624/MSSHI-DOCTOR)
 
@@ -10,17 +10,22 @@ Aplikasi desktop &amp; CLI mandiri (**Rust + Vanilla JavaScript**, 100% terpisah
 
 ---
 
-## Fitur Utama
-- **Koneksi GitHub Langsung (`ETag` Cache):** Memantau tag stabil (`v3.1.2`, `v3.2.1`, dst.) & branch `main` tanpa full-clone dan tetap aman saat offline/rate-limited.
-- **Auto-Upgrade ON/OFF + Pemilih Versi Mandiri:** Bebas menyalakan *Auto-Upgrade* (dengan konfirmasi 1-klik) atau mematikannya untuk mengunci (*pin*) versi pilihan sendiri + pratinjau `CHANGELOG.md` + **Rollback 1-Klik**.
-- **5 Kartu Preset Keperluan Klien:** *Belajar*, *Konten Kreasi (Higgsfield 9 modul & Lemo-Opuscar)*, *Riset & Skripsi*, *Coding & Security*, dan *Kombinasi Preset MuZA 5 Bot*.
-- **Connect Hub (`Bot ↔ CLI-Anything ↔ Apps`):** Scanner aplikasi lokal/web, *Auto-Reconnect*, preferensi browser deklaratif tanpa sentuh cookie, dan **`auto_open_on_boot: FALSE`** terkunci permanen.
-- **Pengaman Windows Kritis:** Proteksi **3-Zona** (0 sentuh `provider`, `model`, `API key`, `.env`, `SOUL.md` kustom, maupun folder privat), **Anti-Admin-Lock Guard**, **Auto-Temp Redirect ke Drive D:/E:**, preflight memori add-on ML, dan **0 panggilan LLM berbayar**.
-- **Tombol Pintas Opsional:** Dapat membuka aplikasi terpisah **MSSHI Doctor** dari header bila terpasang.
+## Mulai di Windows
+
+[**Unduh EXE Windows x64**](https://github.com/zidanaisar624/MSSHI-CONNECT/releases/download/v1.0.0/MSSHI-Connect-Portable-win-x64.exe) · [ZIP portabel](https://github.com/zidanaisar624/MSSHI-CONNECT/releases/download/v1.0.0/MSSHI-Connect-1.0.0-windows-x64.zip) · [Checksum SHA-256](https://github.com/zidanaisar624/MSSHI-CONNECT/releases/download/v1.0.0/SHA256SUMS.txt)
+
+1. Buka EXE, lalu periksa lokasi MSSHI dan ruang yang tersedia. Antarmuka menggunakan browser lokal.
+2. Pilih jenis kebutuhan dan simpan rencana. Status `PLANNED` berarti preferensi telah dicatat.
+3. Klik **Pasang CLI Core v3.2.1** untuk memasang launcher resmi GitHub. Proses ini memerlukan Git, Python 3.10+, internet, dan konfirmasi pengguna. Connect memeriksa commit rilis yang tetap sebelum pemasangan.
+4. Setelah berhasil, buka folder `bin` pada lokasi MSSHI yang ditampilkan. Jalankan `.\msshi.cmd setup` dari PowerShell untuk menentukan preset dan pengaturan Hermes.
+
+Connect 1.0.0 memasang tag stabil v3.2.1. Katalog versi GitHub dapat menampilkan pembaruan yang lebih baru. Pilihan versi dan preferensi Auto-Upgrade di Connect merupakan data rencana hingga tersedia mekanisme penerapan versi tersebut. Memeriksa ulang koneksi menyimpan peta aplikasi, dan konfigurasi profil dilanjutkan melalui wizard Core. Untuk pemulihan file yang telah dicatat Doctor, gunakan aplikasi [MSSHI Doctor](https://github.com/zidanaisar624/MSSHI-DOCTOR/releases/tag/v1.2.0).
+
+Pemeriksaan Connect tidak memakai model AI. Aplikasi memisahkan pemasangan launcher dari setup bot. Pemilihan provider, model, alamat endpoint, dan kunci API dilakukan pengguna.
 
 ## Cara Menjalankan di Windows
-1. **Paket Portabel Windows x64 (GitHub Actions):** Ekstrak ZIP lalu klik dua kali **`MSSHI-Connect.exe`** atau **`MSSHI_Connect.bat`**.
-2. **Langsung dari Kode Sumber (Node.js 20+):** Klik dua kali **`MSSHI_Connect.bat`** atau jalankan:
+1. **Paket Portabel Windows x64:** Ekstrak ZIP lalu klik dua kali **`MSSHI-Connect.exe`** atau **`MSSHI_Connect.bat`**.
+2. **Langsung dari Kode Sumber (Node.js 20+):** Klik dua kali **`MSSHI_Connect.bat`** atau jalankan pemeriksaan berikut. Jalur ini menyediakan pratinjau rencana, sedangkan pemasangan memerlukan EXE Rust:
    ```powershell
    .\msshi-connect.cmd --probe
    .\msshi-connect.cmd --check-updates

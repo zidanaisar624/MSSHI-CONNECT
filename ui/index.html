@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>MSSHI Installer &amp; Connect v1.0.0</title>
   <link rel="icon" type="image/png" href="/assets/msshi-connect-icon-64.png">
   <link rel="stylesheet" href="/styles/cyber-noir.css">
@@ -25,7 +26,7 @@
   </header>
 
   <section class="hero-strip">
-    <img src="/assets/msshi-connect-banner-ui.png" alt="MSSHI Installer & Connect Cyber-Noir Banner" class="hero-img">
+    <img src="/assets/msshi-connect-banner-ui.png" alt="MSSHI Connect 1.0.0 untuk memasang Core v3.2.1" class="hero-img">
     <div id="admin-warning" class="alert alert-danger hidden">
       ⚠️ <strong>PERINGATAN ANTI-ADMIN-LOCK:</strong> Aplikasi berjalan sebagai Administrator Windows! Tutup dan jalankan sebagai user biasa agar file <code>config.yaml</code> Hermes Desktop tidak terkunci <code>Permission denied</code>.
     </div>
@@ -55,18 +56,18 @@
         <article class="card">
           <h2>🔄 Kontrol Versi GitHub (Auto vs Mandiri)</h2>
           <div class="form-row">
-            <label>Mode Auto-Upgrade</label>
+            <label>Pilihan versi untuk rencana</label>
             <div class="toggle-group">
               <button id="btn-auto-on" class="seg active" type="button">ON (Auto-Cek)</button>
               <button id="btn-auto-off" class="seg" type="button">OFF (Pilih Mandiri)</button>
             </div>
           </div>
           <div id="policy-row" class="form-row">
-            <label for="sel-policy">Kebijakan Auto-Upgrade</label>
+            <label for="sel-policy">Simulasi kebijakan pembaruan</label>
             <select id="sel-policy">
               <option value="smart_split">Cerdas (Masalah Sistem = Auto Tanpa Tanya · Fitur Baru = Warning &amp; Pilih Sendiri)</option>
               <option value="notify_confirm">Tanya Semua (Konfirmasi 1-Klik untuk semua update)</option>
-              <option value="auto_apply_zone1">Full Auto Zona 1 (Semua update inti otomatis + Backup Receipt)</option>
+              <option value="auto_apply_zone1">Prioritaskan pembaruan inti</option>
             </select>
           </div>
           <div class="form-row">
@@ -120,19 +121,19 @@
             </select>
           </div>
           <div class="checkbox-card">
-            <label><input id="chk-light-ram" type="checkbox"> <strong>Mode Super Hemat (Acuan Benchmark Win10 RAM 4 GB · <code>--light --low-ram</code>)</strong></label>
-            <p class="muted">Hermes berjalan di Windows 11; mode ini menjaga beban MSSHI sangat ringan (saking ringannya sanggup jalan di spek sekelas Win10 RAM 4 GB: unduhan ≤ 50 MB, ekstra RAM ≤ 150 MB).</p>
+            <label><input id="chk-light-ram" type="checkbox"> <strong>Rencanakan mode hemat ( <code>--light --low-ram</code>)</strong></label>
+            <p class="muted">Mode hemat mengurangi komponen opsional dalam rencana. Jumlah unduhan dan konsumsi memori bergantung pada pilihan Anda.</p>
           </div>
         </article>
 
         <article class="card">
           <h2>💾 Lokasi Drive, Auto-Temp &amp; Buku Panduan PDF</h2>
           <div class="form-row">
-            <label for="inp-msshi-home">Folder MSSHI (<code>MSSHI_HOME</code> — Zona 1)</label>
+            <label for="inp-msshi-home">Folder MSSHI dalam rencana</label>
             <input id="inp-msshi-home" type="text" value="D:\MSSHI">
           </div>
           <div class="form-row">
-            <label for="inp-hermes-home">Folder Data Hermes (<code>HERMES_HOME</code>)</label>
+            <label for="inp-hermes-home">Folder data Hermes dalam rencana</label>
             <input id="inp-hermes-home" type="text" value="D:\HermesData">
           </div>
           <div id="drive-pills" class="pill-row"></div>
@@ -181,7 +182,7 @@
         </div>
         <div class="card-actions mb-12">
           <button id="btn-scan-hub" class="btn btn-secondary btn-sm" type="button">Pindai Aplikasi Lokal</button>
-          <button id="btn-reconnect-all" class="btn btn-primary btn-sm" type="button">Auto-Reconnect Semua Bot</button>
+          <button id="btn-reconnect-all" class="btn btn-primary btn-sm" type="button">Pindai Ulang &amp; Simpan Peta</button>
           <button id="btn-save-hub" class="btn btn-ghost btn-sm" type="button">Simpan Pemetaan Connect Hub</button>
         </div>
         <div id="hub-apps-table"></div>
@@ -205,7 +206,7 @@
               <label for="inp-browser-label">Label Profil Opsional (Login tetap manual)</label>
               <input id="inp-browser-label" type="text" placeholder="Contoh: Kerja / Riset">
             </div>
-            <p class="muted">MSSHI Connect tidak pernah membuka browser secara paksa, tidak membaca cookie, dan tidak memindahkan sesi login.</p>
+            <p class="muted">Peta ini menyimpan preferensi untuk setup lanjutan. Login aplikasi tetap dilakukan oleh pengguna.</p>
           </div>
         </div>
       </article>
@@ -219,7 +220,7 @@
           <pre id="dry-run-box" class="console">Klik "Dry-Run Preview" di bawah untuk melihat seluruh rencana aksi sebelum menulis file apa pun.</pre>
         </article>
         <article class="card">
-          <h2>⏪ Riwayat Receipt &amp; Rollback 1-Klik</h2>
+          <h2>Riwayat rencana tersimpan</h2>
           <div id="receipts-list" class="kv-list">Belum ada receipt tersimpan.</div>
           <div class="card-actions">
             <button id="btn-refresh-receipts" class="btn btn-ghost btn-sm" type="button">Muat Ulang Receipt</button>
@@ -231,8 +232,9 @@
 
   <footer class="bottombar">
     <div class="bottom-left">
+      <button id="btn-install-core" class="btn btn-primary" type="button">Pasang CLI Core v3.2.1</button>
       <button id="btn-dry-run" class="btn btn-secondary" type="button">Dry-Run Preview</button>
-      <button id="btn-apply-open" class="btn btn-primary" type="button">Terapkan Instalasi / Upgrade</button>
+      <button id="btn-apply-open" class="btn btn-primary" type="button">Simpan rencana</button>
     </div>
     <div class="bottom-right">
       <span id="status-msg" class="muted">Siap · 0 panggilan LLM berbayar · Zona 2 &amp; 3 terlindungi</span>
@@ -243,7 +245,7 @@
   <!-- MODAL KONFIRMASI WAJIB -->
   <div id="confirm-modal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-box">
-      <h3>🛡️ Konfirmasi Pemasangan / Upgrade Aman (Zona 1)</h3>
+      <h3>Simpan rencana pemasangan</h3>
       <div id="confirm-summary" class="console"></div>
       <label class="confirm-check">
         <input id="chk-confirm-zone2" type="checkbox">
@@ -251,7 +253,7 @@
       </label>
       <div class="card-actions">
         <button id="btn-confirm-cancel" class="btn btn-ghost" type="button">Batal</button>
-        <button id="btn-confirm-go" class="btn btn-primary" type="button" disabled>Lanjutkan Pemasangan Aman</button>
+        <button id="btn-confirm-go" class="btn btn-primary" type="button" disabled>Simpan rencana ini</button>
       </div>
     </div>
   </div>
@@ -270,13 +272,13 @@
   <!-- MODAL SMART UPDATE: SISTEM AUTO TANPA TANYA vs PILIH FITUR TERTENTU -->
   <div id="feature-prompt-modal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-box">
-      <h3>⚡ Update Sistem Otomatis &amp; Pilihan Fitur Baru</h3>
+      <h3>Simulasi pembaruan dan pilihan fitur</h3>
       <div id="system-silent-banner" class="alert" style="background:rgba(16,185,129,.15);border:1px solid #10B981;color:#A7F3D0"></div>
-      <p class="muted mt-12">⚠️ <strong>Peringatan Fitur Opsional Baru:</strong> Centang fitur yang ingin Anda ikut pasang, atau hilangkan centang bila tidak ingin memasangnya:</p>
+      <p class="muted mt-12">⚠️ <strong>Peringatan Fitur Opsional Baru:</strong> Pilih fitur yang ingin dicatat untuk pembaruan berikutnya.</p>
       <div id="feature-prompt-list" class="check-list mt-8"></div>
       <div class="card-actions mt-16">
-        <button id="btn-feature-skip-all" class="btn btn-ghost" type="button">Lewati Semua Fitur (Ambil Update Sistem Saja)</button>
-        <button id="btn-feature-apply-selected" class="btn btn-primary" type="button">Terapkan Update Sistem + Fitur Terpilih</button>
+        <button id="btn-feature-skip-all" class="btn btn-ghost" type="button">Lewati semua fitur</button>
+        <button id="btn-feature-apply-selected" class="btn btn-primary" type="button">Simpan pilihan fitur</button>
       </div>
     </div>
   </div>

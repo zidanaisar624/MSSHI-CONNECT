@@ -50,6 +50,8 @@ pub struct ConnectReceipt {
     pub state: String,
     pub sha256: String,
     pub can_rollback: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plan: Option<InstallPlanRequest>,
 }
 
 pub fn build_dry_run(req: &InstallPlanRequest) -> InstallDryRun {
@@ -167,7 +169,7 @@ pub fn write_receipt(msshi_home: &Path, req: &InstallPlanRequest, state: &str) -
     let receipt = ConnectReceipt {
         receipt_id: receipt_id.clone(),
         created_epoch: epoch,
-        action: "msshi-connect-install".to_string(),
+        action: "msshi-connect-plan".to_string(),
         target_ref: req.target_ref.clone(),
         commit_sha: req.commit_sha.clone(),
         msshi_home: req.msshi_home.clone(),
@@ -176,6 +178,7 @@ pub fn write_receipt(msshi_home: &Path, req: &InstallPlanRequest, state: &str) -
         state: state.to_string(),
         sha256: sha256_hex(seed.as_bytes()),
         can_rollback: state == "APPLIED",
+        plan: Some(req.clone()),
     };
     let path = receipts_dir(msshi_home).join(format!("{receipt_id}.json"));
     let raw = serde_json::to_vec_pretty(&receipt).map_err(|e| e.to_string())?;

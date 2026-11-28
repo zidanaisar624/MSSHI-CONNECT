@@ -8,9 +8,9 @@ use msshi_connect_core::{
     sys_probe::{collect_system_probe, detect_doctor_path, resolve_default_msshi_home},
     version_manager::{classify_msshi_update, load_prefs, save_prefs, ConnectPrefs},
 };
+use base64::{engine::general_purpose::STANDARD, Engine};
 use serde::Deserialize;
 use std::{
-    fs,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -24,13 +24,13 @@ struct ClassifyRequestBody {
 
 fn embedded_asset(rel: &str) -> Option<&'static [u8]> {
     match rel {
-        "ui/index.html" => Some(include_bytes!("../../../../ui/index.html")),
-        "ui/styles/cyber-noir.css" => Some(include_bytes!("../../../../ui/styles/cyber-noir.css")),
-        "ui/js/api.js" => Some(include_bytes!("../../../../ui/js/api.js")),
-        "ui/js/state.js" => Some(include_bytes!("../../../../ui/js/state.js")),
-        "ui/js/app.js" => Some(include_bytes!("../../../../ui/js/app.js")),
-        "assets/msshi-connect-banner-ui.png" => Some(include_bytes!("../../../../assets/msshi-connect-banner-ui.png")),
-        "assets/msshi-connect-icon-64.png" => Some(include_bytes!("../../../../assets/msshi-connect-icon-64.png")),
+        "ui/index.html" => Some(include_bytes!("../../../ui/index.html")),
+        "ui/styles/cyber-noir.css" => Some(include_bytes!("../../../ui/styles/cyber-noir.css")),
+        "ui/js/api.js" => Some(include_bytes!("../../../ui/js/api.js")),
+        "ui/js/state.js" => Some(include_bytes!("../../../ui/js/state.js")),
+        "ui/js/app.js" => Some(include_bytes!("../../../ui/js/app.js")),
+        "assets/msshi-connect-banner-ui.png" => Some(include_bytes!("../../../assets/msshi-connect-banner-ui.png")),
+        "assets/msshi-connect-icon-64.png" => Some(include_bytes!("../../../assets/msshi-connect-icon-64.png")),
         _ => None,
     }
 }
@@ -43,15 +43,15 @@ fn json_response(status: u16, body: &impl serde::Serialize) -> Response<std::io:
         .with_header(header)
 }
 
-fn static_file_response(base: &Path, rel: &str, mime: &str) -> Response<std::io::Cursor<Vec<u8>>> {
-    let path = base.join(rel);
-    if let Ok(data) = fs::read(&path) {
-        let h = Header::from_bytes("Content-Type", mime).unwrap();
-        return Response::from_data(data).with_header(h);
-    }
-    if let Some(embedded) = embedded_asset(rel) {
-        let h = Header::from_bytes("Content-Type", mime).unwrap();
-        return Response::from_data(embedded.to_vec()).with_header(h);
+pub fn embedded_interface_ok() -> bool {
+    ["ui/index.html","ui/styles/cyber-noir.css","ui/js/app.js","ui/js/state.js",
+     "ui/js/api.js","assets/msshi-connect-icon-64.png","assets/msshi-connect-banner-ui.png"]
+        .iter().all(|key| embedded_asset(key).is_some_and(|data| !data.is_empty()))
+}
+
+fn static_file_response(rel: &str, mime: &str) -> Response<std::io::Cursor<Vec<u8>>> {
+    if let Some(asset) = embedded_asset(rel) {
+        return Response::from_data(asset.to_vec()).with_header(Header::from_bytes("Content-Type", mime).unwrap());
     }
     Response::from_string("Not Found").with_status_code(StatusCode(404))
 }
@@ -98,21 +98,12 @@ fn launch_desktop_window(url: &str) {
     }
 }
 
-fn resolve_app_root() -> PathBuf {
-    std::env::current_exe()
-        .ok()
-        .and_then(|e| e.parent().map(Path::to_owned))
-        .filter(|d| d.join("ui").is_dir())
-        .unwrap_or_else(|| PathBuf::from("."))
-}
-
 pub fn run_gui_server(port: u16, cache_dir: PathBuf) -> Result<(), String> {
     let bind_addr = format!("127.0.0.1:{port}");
     let server = Server::http(&bind_addr).map_err(|e| format!("Gagal bind {bind_addr}: {e}"))?;
     let actual_port = server.server_addr().to_ip().map(|a| a.port()).unwrap_or(port);
     let expected_host = format!("127.0.0.1:{actual_port}");
     let token = generate_csprng_token_hex();
-    let app_root = resolve_app_root();
     let url = format!("http://{expected_host}/#t={token}");
 
     println!("{APP_NAME} v{APP_VERSION} berjalan di http://{expected_host}/ (Loopback Aman)");
@@ -126,13 +117,13 @@ pub fn run_gui_server(port: u16, cache_dir: PathBuf) -> Result<(), String> {
 
         if !path.starts_with("/api/") {
             let resp = match path.as_str() {
-                "/" | "/index.html" => static_file_response(&app_root, "ui/index.html", "text/html; charset=utf-8"),
-                "/styles/cyber-noir.css" => static_file_response(&app_root, "ui/styles/cyber-noir.css", "text/css; charset=utf-8"),
-                "/js/api.js" => static_file_response(&app_root, "ui/js/api.js", "application/javascript; charset=utf-8"),
-                "/js/state.js" => static_file_response(&app_root, "ui/js/state.js", "application/javascript; charset=utf-8"),
-                "/js/app.js" => static_file_response(&app_root, "ui/js/app.js", "application/javascript; charset=utf-8"),
-                "/assets/msshi-connect-banner-ui.png" => static_file_response(&app_root, "assets/msshi-connect-banner-ui.png", "image/png"),
-                "/assets/msshi-connect-icon-64.png" => static_file_response(&app_root, "assets/msshi-connect-icon-64.png", "image/png"),
+                "/" | "/index.html" => static_file_response("ui/index.html", "text/html; charset=utf-8"),
+                "/styles/cyber-noir.css" => static_file_response("ui/styles/cyber-noir.css", "text/css; charset=utf-8"),
+                "/js/api.js" => static_file_response("ui/js/api.js", "application/javascript; charset=utf-8"),
+                "/js/state.js" => static_file_response("ui/js/state.js", "application/javascript; charset=utf-8"),
+                "/js/app.js" => static_file_response("ui/js/app.js", "application/javascript; charset=utf-8"),
+                "/assets/msshi-connect-banner-ui.png" => static_file_response("assets/msshi-connect-banner-ui.png", "image/png"),
+                "/assets/msshi-connect-icon-64.png" => static_file_response("assets/msshi-connect-icon-64.png", "image/png"),
                 _ => Response::from_string("Not Found").with_status_code(StatusCode(404)),
             };
             let _ = req.respond(resp);
@@ -193,12 +184,23 @@ pub fn run_gui_server(port: u16, cache_dir: PathBuf) -> Result<(), String> {
                 match serde_json::from_str::<InstallPlanRequest>(&body) {
                     Ok(plan) => {
                         let dry = build_dry_run(&plan);
-                        match write_receipt(&msshi_home, &plan, "APPLIED") {
+                        match write_receipt(&msshi_home, &plan, "PLANNED") {
                             Ok(receipt) => json_response(200, &serde_json::json!({"ok": true, "dry_run": dry, "receipt": receipt})),
                             Err(e) => json_response(500, &serde_json::json!({"error": e})),
                         }
                     }
                     Err(e) => json_response(400, &serde_json::json!({"error": e.to_string()})),
+                }
+            }
+            (Method::Post, "/api/install/core") => {
+                let consent = serde_json::from_reader::<_, serde_json::Value>(std::io::Read::take(req.as_reader(), 1024));
+                if !consent.ok().is_some_and(|v| v.get("confirm").and_then(|s| s.as_str()) == Some("core-v3.2.1")) {
+                    json_response(400, &serde_json::json!({"error": "Konfirmasi pemasangan Core v3.2.1 dahulu."}))
+                } else {
+                    match install_official_core(&msshi_home) {
+                        Ok(()) => json_response(200, &serde_json::json!({"status":"INSTALLED", "ref":"v3.2.1","msshi_home":msshi_home})),
+                        Err(message) => json_response(400, &serde_json::json!({"error":message})),
+                    }
                 }
             }
             (Method::Get, "/api/receipts") => json_response(200, &list_receipts(&msshi_home)),
@@ -230,4 +232,23 @@ pub fn run_gui_server(port: u16, cache_dir: PathBuf) -> Result<(), String> {
         let _ = req.respond(resp);
     }
     Ok(())
+}
+
+fn install_official_core(home: &Path) -> Result<(), String> {
+    if !cfg!(windows) { return Err("Pemasang ini memerlukan Windows.".into()); }
+    let windir = std::env::var_os("SystemRoot").ok_or("Folder sistem Windows belum tersedia.")?;
+    let powershell = PathBuf::from(windir).join(r"System32\WindowsPowerShell\v1.0\powershell.exe");
+    let script = include_str!("../../../tools/install-official-core.ps1");
+    // Windows PowerShell accepts UTF-16LE here, preserving embedded quotation marks.
+    let bytes: Vec<u8> = script.encode_utf16().flat_map(u16::to_le_bytes).collect();
+    let encoded = STANDARD.encode(bytes);
+    let result = Command::new(powershell)
+        .args(["-NoLogo","-NoProfile","-NonInteractive","-EncodedCommand",&encoded])
+        .env("MSSHI_HOME",home)
+        .status().map_err(|_| "Windows PowerShell tidak berhasil dibuka.")?;
+    match result.code() {
+        Some(0) => Ok(()),
+        Some(2) => Err("Pemasangan dibatalkan di dialog Windows.".into()),
+        _ => Err("Pemasangan gagal. Periksa Git, Python 3.10+, jaringan, akses folder, dan pesan pada jendela Connect.".into()),
+    }
 }
