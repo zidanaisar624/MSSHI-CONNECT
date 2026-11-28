@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Live Node.js Bridge & Dev Server for MSSHI Installer & Connect v1.0.1
+ * Live Node.js Bridge & Dev Server for MSSHI Installer & Connect v1.0.2
  * Implements the EXACT same JSON API contract and security invariants as crates/msshi-connect-app:
  * - Strictly binds 127.0.0.1:<ephemeral_port> with 256-bit CSPRNG X-MSSHI-Token + Host/Origin CSRF checks
  * - Enforces 3-Zone protection, anti-traversal/UNC/symlink, Anti-Admin-Lock, Auto-Temp Drive D:
@@ -19,7 +19,7 @@ export const REPO_ROOT = path.resolve(__dirname, "..");
 
 export const CONSTANTS = {
   APP_NAME: "MSSHI Installer & Connect",
-  APP_VERSION: "1.0.1",
+  APP_VERSION: "1.0.2",
   UPSTREAM_FULL_NAME: "zidanaisar624/MSSHI-Mega-Semar-Sang-Hyang-Ismaya",
   SAWERIA_URL: "https://saweria.co/muzas",
   DEFAULT_REF: "v3.2.2",

@@ -1,5 +1,5 @@
 pub const APP_NAME: &str = "MSSHI Installer & Connect";
-pub const APP_VERSION: &str = "1.0.1";
+pub const APP_VERSION: &str = "1.0.2";
 pub const UPSTREAM_OWNER: &str = "zidanaisar624";
 pub const UPSTREAM_REPO: &str = "MSSHI-Mega-Semar-Sang-Hyang-Ismaya";
 pub const UPSTREAM_FULL_NAME: &str = "zidanaisar624/MSSHI-Mega-Semar-Sang-Hyang-Ismaya";
