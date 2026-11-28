@@ -3,7 +3,7 @@ name: Build and test MSSHI Connect on Windows
 on:
   push:
     branches: [main]
-    tags: ['v1.0.0']
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -33,12 +33,12 @@ jobs:
           name: MSSHI-Connect-Windows-x64
           path: |
             dist/MSSHI-Connect-Portable-win-x64.exe
-            dist/MSSHI-Connect-1.0.0-windows-x64.zip
+            dist/MSSHI-Connect-*-windows-x64.zip
             dist/SHA256SUMS.txt
           if-no-files-found: error
 
   release:
-    if: github.ref == 'refs/tags/v1.0.0'
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: windows-x64
     runs-on: windows-latest
     permissions:
@@ -55,11 +55,14 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
-          $names = @("MSSHI-Connect-Portable-win-x64.exe","MSSHI-Connect-1.0.0-windows-x64.zip")
+          if ($env:TAG -notmatch '^v\d+\.\d+\.\d+$') { throw "Invalid tag format: $env:TAG" }
+          $ver = $env:TAG.Substring(1)
+          $zipName = "MSSHI-Connect-$ver-windows-x64.zip"
+          $names = @("MSSHI-Connect-Portable-win-x64.exe", $zipName)
           $manifest = @(Get-Content -LiteralPath dist/SHA256SUMS.txt)
           if ($manifest.Count -ne $names.Count) { throw "Unexpected release manifest" }
           foreach ($name in $names) {
             $hash = (Get-FileHash -LiteralPath "dist/$name" -Algorithm SHA256).Hash.ToLowerInvariant()
             if ($manifest -cnotcontains "$hash  $name") { throw "Checksum mismatch for $name" }
           }
-          gh release create "$env:TAG" dist/MSSHI-Connect-Portable-win-x64.exe dist/MSSHI-Connect-1.0.0-windows-x64.zip dist/SHA256SUMS.txt --repo "$env:REPOSITORY" --verify-tag --title "MSSHI Connect $env:TAG" --notes "Buka EXE atau ekstrak ZIP di Windows x64. Panduan awal tersedia dalam README."
+          gh release create "$env:TAG" dist/MSSHI-Connect-Portable-win-x64.exe "dist/$zipName" dist/SHA256SUMS.txt --repo "$env:REPOSITORY" --verify-tag --title "MSSHI Connect $env:TAG" --notes "Buka EXE atau ekstrak ZIP di Windows x64. Panduan awal tersedia dalam README."

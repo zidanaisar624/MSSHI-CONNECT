@@ -11,7 +11,7 @@ export function createInitialState() {
       auto_upgrade_enabled: true,
       auto_upgrade_policy: "smart_split",
       channel: "stable",
-      selected_ref: "v3.2.1",
+      selected_ref: "v3.2.2",
       approved_features: [],
       skipped_features: [],
       local_source_path: "",
@@ -44,8 +44,8 @@ export function applyPresetToState(state, preset) {
 
 export function resolveEffectiveRef(prefs, githubCatalog) {
   if (!prefs.auto_upgrade_enabled) {
-    return prefs.selected_ref || "v3.2.1";
+    return prefs.selected_ref || "v3.2.2";
   }
   if (prefs.channel === "main") return "main";
-  return (githubCatalog && githubCatalog.latest_stable) || prefs.selected_ref || "v3.2.1";
+  return (githubCatalog && githubCatalog.latest_stable) || prefs.selected_ref || "v3.2.2";
 }

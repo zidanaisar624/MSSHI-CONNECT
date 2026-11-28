@@ -6,7 +6,7 @@ $dir = [IO.Directory]::CreateDirectory($OutputDir).FullName
 $exe = Join-Path $dir 'MSSHI-Connect-Portable-win-x64.exe'
 Copy-Item -LiteralPath $Binary -Destination $exe -Force
 $version = & $exe --version
-if ($LASTEXITCODE -ne 0 -or $version -notmatch 'v1\.0\.0\b') { throw 'Unexpected Connect executable version' }
+if ($LASTEXITCODE -ne 0 -or $version -notmatch 'v1\.0\.1\b') { throw 'Unexpected Connect executable version' }
 $health = & $exe --self-check
 if ($LASTEXITCODE -ne 0 -or $health -ne 'OK') { throw 'Embedded interface failed its self-check' }
 $stage = Join-Path $dir ('package-' + [Guid]::NewGuid().ToString('N'))
@@ -20,7 +20,7 @@ try {
     foreach ($file in 'msshi-connect-icon-64.png','msshi-connect-banner.jpg') {
         Copy-Item -LiteralPath (Join-Path $repo "assets/$file") -Destination $assets
     }
-    $zipName = 'MSSHI-Connect-1.0.0-windows-x64.zip'
+    $zipName = 'MSSHI-Connect-1.0.1-windows-x64.zip'
     $zip = Join-Path $dir $zipName
     Compress-Archive -Path "$stage/*" -DestinationPath $zip -Force
     $lines = @($exe,$zip) | ForEach-Object {

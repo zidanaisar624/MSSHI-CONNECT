@@ -194,11 +194,11 @@ pub fn run_gui_server(port: u16, cache_dir: PathBuf) -> Result<(), String> {
             }
             (Method::Post, "/api/install/core") => {
                 let consent = serde_json::from_reader::<_, serde_json::Value>(std::io::Read::take(req.as_reader(), 1024));
-                if !consent.ok().is_some_and(|v| v.get("confirm").and_then(|s| s.as_str()) == Some("core-v3.2.1")) {
-                    json_response(400, &serde_json::json!({"error": "Konfirmasi pemasangan Core v3.2.1 dahulu."}))
+                if !consent.ok().is_some_and(|v| v.get("confirm").and_then(|s| s.as_str()) == Some("core-v3.2.2")) {
+                    json_response(400, &serde_json::json!({"error": "Konfirmasi pemasangan Core v3.2.2 dahulu."}))
                 } else {
                     match install_official_core(&msshi_home) {
-                        Ok(()) => json_response(200, &serde_json::json!({"status":"INSTALLED", "ref":"v3.2.1","msshi_home":msshi_home})),
+                        Ok(()) => json_response(200, &serde_json::json!({"status":"INSTALLED", "ref":"v3.2.2","msshi_home":msshi_home})),
                         Err(message) => json_response(400, &serde_json::json!({"error":message})),
                     }
                 }

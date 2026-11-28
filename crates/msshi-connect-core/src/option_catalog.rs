@@ -73,7 +73,7 @@ pub fn default_catalog() -> OptionCatalog {
             ClientPreset {
                 id: "riset-skripsi".into(),
                 label: "3. Riset & Skripsi".into(),
-                subtitle: "Val + Shizuka · Riset Untuk S1–S3 (Diutamakan S1 Skripsi) v1.1 .docx, Colab, opsional TimesFM".into(),
+                subtitle: "Val + Shizuka · Riset Untuk S1–S3 (Diutamakan S1 Skripsi) Engine DOI 2-Lapis + v1.2 .docx, Colab, opsional TimesFM".into(),
                 mode: "academic-mahasiswa".into(),
                 default_bot: "auto".into(),
                 recommended_addons: vec!["dreaming".into()],
@@ -99,7 +99,7 @@ pub fn default_catalog() -> OptionCatalog {
             ClientPreset {
                 id: "muza-full".into(),
                 label: "5. Kombinasi — Preset MuZA (5 Bot)".into(),
-                subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 81 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)".into(),
+                subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.2 · 82 Skill Bundel + 6 Opt-in · 76 Upstreams · Engine DOI Val + Cindy + Rust)".into(),
                 mode: "muza-preset".into(),
                 default_bot: "auto".into(),
                 recommended_addons: vec!["dreaming".into()],

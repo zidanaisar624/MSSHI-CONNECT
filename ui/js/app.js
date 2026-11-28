@@ -309,14 +309,14 @@ function wireEvents() {
 
   $("btn-install-core").addEventListener("click", async () => {
     if (!state.probe) { setStatus("Tunggu sampai deteksi perangkat selesai."); return; }
-    const message = "Unduh CLI Core v3.2.1 resmi dari GitHub ke " + state.probe.msshi_home +
+    const message = "Unduh CLI Core v3.2.2 resmi dari GitHub ke " + state.probe.msshi_home +
       "? Memerlukan Git dan Python 3.10+. Preset, add-on, serta konfigurasi profil dapat kamu pilih setelahnya lewat msshi setup.";
     if (!window.confirm(message)) return;
     const button = $("btn-install-core");
     button.disabled = true;
     setStatus("Menunggu konfirmasi Windows dan pemasangan Core…");
     try {
-      const result = await apiRequest("/api/install/core", {method:"POST",body:{confirm:"core-v3.2.1"}});
+      const result = await apiRequest("/api/install/core", {method:"POST",body:{confirm:"core-v3.2.2"}});
       setStatus("CLI Core terpasang. Langkah berikutnya: buka " + result.msshi_home + "\\bin dan jalankan .\\msshi.cmd setup di PowerShell.");
     } catch (e) { setStatus(e.message); }
     finally { button.disabled = false; }

@@ -1,7 +1,7 @@
 # Embedded by the Windows executable. Installs the Core launcher only.
 $ErrorActionPreference = 'Stop'
-$tag = 'v3.2.1'
-$expected = 'deef5fd23b995888f0d3753d751d49dd72204f26'
+$tag = 'v3.2.2'
+$expected = '747b3edce5ea3b94ac7660f7c9a20735f977da7e'
 $repository = 'https://github.com/zidanaisar624/MSSHI-Mega-Semar-Sang-Hyang-Ismaya.git'
 $stage = $null
 $previousTemp = $env:TEMP

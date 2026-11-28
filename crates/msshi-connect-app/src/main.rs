@@ -11,7 +11,7 @@ use msshi_connect_core::{
 };
 use std::{env, path::PathBuf, process};
 
-const HELP: &str = "MSSHI Installer & Connect v1.0.0 (Rust + Vanilla JS)\n\
+const HELP: &str = "MSSHI Installer & Connect v1.0.1 (Rust + Vanilla JS)\n\
 Pemakaian:\n\
   msshi-connect --gui [--port PORT]         Buka antarmuka desktop Cyber-Noir 5-Tab\n\
   msshi-connect --probe [--json]            Cek perangkat, Hermes, RAM, Drive & MSSHI Doctor\n\

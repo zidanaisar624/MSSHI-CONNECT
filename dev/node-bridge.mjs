@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Live Node.js Bridge & Dev Server for MSSHI Installer & Connect v1.0.0
+ * Live Node.js Bridge & Dev Server for MSSHI Installer & Connect v1.0.1
  * Implements the EXACT same JSON API contract and security invariants as crates/msshi-connect-app:
  * - Strictly binds 127.0.0.1:<ephemeral_port> with 256-bit CSPRNG X-MSSHI-Token + Host/Origin CSRF checks
  * - Enforces 3-Zone protection, anti-traversal/UNC/symlink, Anti-Admin-Lock, Auto-Temp Drive D:
@@ -19,10 +19,10 @@ export const REPO_ROOT = path.resolve(__dirname, "..");
 
 export const CONSTANTS = {
   APP_NAME: "MSSHI Installer & Connect",
-  APP_VERSION: "1.0.0",
+  APP_VERSION: "1.0.1",
   UPSTREAM_FULL_NAME: "zidanaisar624/MSSHI-Mega-Semar-Sang-Hyang-Ismaya",
   SAWERIA_URL: "https://saweria.co/muzas",
-  DEFAULT_REF: "v3.2.1",
+  DEFAULT_REF: "v3.2.2",
   ALLOWED_HOSTS: new Set([
     "api.github.com",
     "raw.githubusercontent.com",
@@ -110,9 +110,9 @@ export function getOptionCatalog() {
     presets: [
       { id: "belajar", label: "1. Belajar", subtitle: "Shizuka & Yukino · Chalk, LearnLoop, OSSU CS, Anti-Slop", mode: "academic-mahasiswa", default_bot: "auto", recommended_addons: ["learnloop"], recommended_sources: ["ossu"] },
       { id: "konten", label: "2. Konten Kreasi", subtitle: "Kiki-Chii · Filmmaking S2, Higgsfield 9 modul, BRAG + Opt-in Blender MCP, RAEA, Lemo-Opuscar & Meshy 3D", mode: "muza-preset", default_bot: "auto", recommended_addons: ["imagination-studio", "lemo-opuscar"], recommended_sources: ["rea-video"] },
-      { id: "riset-skripsi", label: "3. Riset & Skripsi", subtitle: "Val + Shizuka · Riset Untuk S1–S3 (Diutamakan S1 Skripsi) v1.1 .docx, Colab, opsional TimesFM", mode: "academic-mahasiswa", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
+      { id: "riset-skripsi", label: "3. Riset & Skripsi", subtitle: "Val + Shizuka · Riset Untuk S1–S3 (Diutamakan S1 Skripsi) Engine DOI 2-Lapis + v1.2 .docx, Colab, opsional TimesFM", mode: "academic-mahasiswa", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
       { id: "coding-security", label: "4. Coding & Security", subtitle: "Shikaku · OpenCodeReview, ast-grep, Knip, Modern Web, Rust (Hot-Path), Grim Prompter, BugHunter", mode: "muza-preset", default_bot: "auto", recommended_addons: [], recommended_sources: ["open-code-review", "ast-grep", "knip", "modern-web-guidance", "rust-anything", "grim-prompter", "claude-bughunter"] },
-      { id: "muza-full", label: "5. Kombinasi — Preset MuZA (5 Bot)", subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.1 · 81 Skill Bundel + 6 Opt-in · Cindy Grand-Plan + Rust Hot-Path)", mode: "muza-preset", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
+      { id: "muza-full", label: "5. Kombinasi — Preset MuZA (5 Bot)", subtitle: "Yukino, Shizuka, Val, Kiki-Chii, Shikaku (v3.2.2 · 82 Skill Bundel + 6 Opt-in · 76 Upstreams · Engine DOI Val + Cindy + Rust)", mode: "muza-preset", default_bot: "auto", recommended_addons: ["dreaming"], recommended_sources: [] },
     ],
     addons: [
       { id: "rea", name: "REA (Reverse Engineer Anything)", owner_bot: "Shikaku", disk_estimate: "~180 MB", ram_note: "0 MB idle", os_note: "Opt-in aman (--with-rea · default OFF)", default_enabled: false },
@@ -184,7 +184,7 @@ export function classifyMsshiUpdate(targetRef, changedPaths = null, prefs = {}) 
   const policy = prefs.auto_upgrade_policy || "smart_split";
   const autoOn = prefs.auto_upgrade_enabled !== false;
   return {
-    target_ref: targetRef || "v3.2.1",
+    target_ref: targetRef || "v3.2.2",
     system_patches: systemPatches,
     system_auto_apply_silent: autoOn && (policy === "smart_split" || policy === "auto_apply_zone1") && systemPatches.length > 0,
     optional_features: optionalFeatures,
@@ -225,7 +225,7 @@ export function buildDryRun(req) {
 
   const steps = [
     `Arahkan TEMP/TMP ke ${tempRedirect} agar Drive C: aman.`,
-    `Sinkronkan Zona 1 MSSHI (${req.target_ref || "v3.2.1"}) ke ${msshiHome} (backup receipt otomatis).`,
+    `Sinkronkan Zona 1 MSSHI (${req.target_ref || "v3.2.2"}) ke ${msshiHome} (backup receipt otomatis).`,
     `Jalankan msshi ${args.join(" ")} (Hermes Home: ${hermesHome}).`,
   ];
   if ((req.context_sources || []).length) {
@@ -236,7 +236,7 @@ export function buildDryRun(req) {
   }
 
   return {
-    target_ref: req.target_ref || "v3.2.1",
+    target_ref: req.target_ref || "v3.2.2",
     commit_sha: req.commit_sha || null,
     msshi_home: msshiHome,
     hermes_home: hermesHome,
@@ -428,7 +428,7 @@ export function createConnectServer({ port = 0, dataDir = null, fetcher = fetch 
         auto_upgrade_enabled: true,
         auto_upgrade_policy: "smart_split",
         channel: "stable",
-        selected_ref: "v3.2.1",
+        selected_ref: "v3.2.2",
         approved_features: [],
         skipped_features: [],
         local_source_path: null,
@@ -484,7 +484,7 @@ export function createConnectServer({ port = 0, dataDir = null, fetcher = fetch 
           auto_upgrade_enabled: Boolean(body.auto_upgrade_enabled),
           auto_upgrade_policy: validPolicies.has(body.auto_upgrade_policy) ? body.auto_upgrade_policy : "smart_split",
           channel: body.channel === "main" ? "main" : "stable",
-          selected_ref: String(body.selected_ref || "v3.2.1"),
+          selected_ref: String(body.selected_ref || "v3.2.2"),
           approved_features: Array.isArray(body.approved_features) ? body.approved_features.map(String) : [],
           skipped_features: Array.isArray(body.skipped_features) ? body.skipped_features.map(String) : [],
           local_source_path: body.local_source_path || null,
@@ -514,8 +514,8 @@ export function createConnectServer({ port = 0, dataDir = null, fetcher = fetch 
       }
       if (req.method === "POST" && urlPath === "/api/install/core") {
         const request = await readJsonBody(req);
-        if (request.confirm !== "core-v3.2.1") return sendJson(400,{error:"Konfirmasi Core v3.2.1 dahulu."});
-        return sendJson(409,{error:"Untuk memasang CLI Core v3.2.1, gunakan EXE Windows di GitHub Releases."});
+        if (request.confirm !== "core-v3.2.2") return sendJson(400,{error:"Konfirmasi Core v3.2.2 dahulu."});
+        return sendJson(409,{error:"Untuk memasang CLI Core v3.2.2, gunakan EXE Windows di GitHub Releases."});
       }
       if (req.method === "GET" && urlPath === "/api/receipts") {
         if (!fs.existsSync(receiptsDir)) return sendJson(200, []);

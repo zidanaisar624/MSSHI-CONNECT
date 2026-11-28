@@ -152,7 +152,7 @@ test("Loopback server enforces CSRF token, persists prefs/receipts, and locks au
     assert.equal(applied.receipt.state, "PLANNED");
     assert.equal(applied.receipt.can_rollback, false);
     assert.equal(applied.receipt.plan.mode, "muza-preset");
-    for (const [confirm, expected] of [["", 400], ["core-v3.2.1", 409]]) {
+    for (const [confirm, expected] of [["", 400], ["core-v3.2.2", 409]]) {
       const attempt = await fetch(`${base}/api/install/core`, {
         method: "POST", headers, body: JSON.stringify({confirm}),
       });
